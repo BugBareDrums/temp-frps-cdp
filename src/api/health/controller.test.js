@@ -1,5 +1,5 @@
 import Hapi from '@hapi/hapi'
-import { health } from '~/src/api/health/index.js'
+import { health } from './index.js'
 
 describe('#healthController', () => {
   const server = Hapi.server()
