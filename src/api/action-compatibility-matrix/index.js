@@ -1,16 +1,16 @@
-import { findCompatibleActions } from '~/src/api/actionCompatibilityMatrix/controllers/index.js'
+import { findCompatibleActions } from '~/src/api/action-compatibility-matrix/controllers/index.js'
 
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
 const actionCompatibilityMatrix = {
   plugin: {
-    name: 'compatibilityMatrix',
+    name: 'compatibility-matrix',
     register: (server) => {
       server.route([
         {
           method: 'GET',
-          path: '/compatibilityMatrix/{action}',
+          path: '/compatibility-matrix/{action}',
           ...findCompatibleActions
         }
       ])
