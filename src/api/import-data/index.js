@@ -1,16 +1,16 @@
-import { importOptionsController } from '~/src/api/importData/controllers/index.js'
+import { importOptionsController } from '~/src/api/import-data/controllers/index.js'
 
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
 const importData = {
   plugin: {
-    name: 'importData',
+    name: 'import-data',
     register: (server) => {
       server.route([
         {
           method: 'POST',
-          path: '/importData/options',
+          path: '/import-data/options',
           options: {
             payload: {
               maxBytes: Number.MAX_SAFE_INTEGER

@@ -1,5 +1,5 @@
-import { insertOptionsData } from '~/src/api/importData/helpers/insert-options-data.js'
-import { deleteOptionsData } from '~/src/api/importData/helpers/delete-options-data.js'
+import { insertOptionsData } from '~/src/api/import-data/helpers/insert-options-data.js'
+import { deleteOptionsData } from '~/src/api/import-data/helpers/delete-options-data.js'
 
 /**
  * Import Compatibility Matrix controller
