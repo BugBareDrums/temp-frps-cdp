@@ -1,7 +1,7 @@
 import Hapi from '@hapi/hapi'
 import { action } from './index.js'
 
-describe('#actionController', () => {
+describe('Get Action controller', () => {
   const server = Hapi.server()
 
   beforeAll(async () => {
