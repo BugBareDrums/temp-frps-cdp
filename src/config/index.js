@@ -102,6 +102,26 @@ const config = convict({
     format: Boolean,
     default: isProduction,
     env: 'ENABLE_METRICS'
+  },
+  crm: {
+    baseUri: {
+      doc: 'The Base URI for the CRM tool',
+      format: String,
+      default: 'http://changeme',
+      env: 'CRM_API_BASE_URI'
+    },
+    username: {
+      doc: 'The CRM tool API Username',
+      format: String,
+      default: 'changeme',
+      env: 'CRM_API_USERNAME'
+    },
+    password: {
+      doc: 'The CRM tool API Password',
+      format: String,
+      default: 'changeme',
+      env: 'CRM_API_PASSWORD'
+    }
   }
 })
 
