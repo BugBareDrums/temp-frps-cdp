@@ -1,4 +1,4 @@
-const hasMinimumParcelArea = (application, ruleConfig) => {
+export const hasMinimumParcelArea = (application, ruleConfig) => {
   const {
     landParcel: { area }
   } = application
@@ -12,5 +12,3 @@ const hasMinimumParcelArea = (application, ruleConfig) => {
       }
     : { passed }
 }
-
-module.exports = { hasMinimumParcelArea }

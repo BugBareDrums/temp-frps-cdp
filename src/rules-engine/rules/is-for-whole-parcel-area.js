@@ -1,4 +1,4 @@
-function isForWholeParcelArea(application) {
+export function isForWholeParcelArea(application) {
   const {
     areaAppliedFor,
     landParcel: { area }
@@ -15,5 +15,3 @@ function isForWholeParcelArea(application) {
 
   return { passed: true }
 }
-
-module.exports = { isForWholeParcelArea }

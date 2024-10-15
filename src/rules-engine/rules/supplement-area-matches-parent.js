@@ -1,4 +1,4 @@
-function supplementAreaMatchesParent(application, config) {
+export function supplementAreaMatchesParent(application, config) {
   const {
     areaAppliedFor,
     actionCodeAppliedFor,
@@ -31,5 +31,3 @@ function supplementAreaMatchesParent(application, config) {
 
   return { passed: true }
 }
-
-module.exports = { supplementAreaMatchesParent }

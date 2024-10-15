@@ -1,7 +1,7 @@
-const { rules: rulesLibrary } = require('./rules')
+import { rules } from './rules/index.js'
 
-const executeRule = (ruleName, application, ruleConfig) => {
-  const rule = rulesLibrary[ruleName]
+export const executeRule = (ruleName, application, ruleConfig) => {
+  const rule = rules[ruleName]
 
   if (!rule) {
     throw new Error(`Unknown rule: ${ruleName}`)
@@ -10,7 +10,7 @@ const executeRule = (ruleName, application, ruleConfig) => {
   return rule(application, ruleConfig)
 }
 
-const executeRules = (application, rules) => {
+export const executeRules = (application, rules) => {
   if (!rules?.length) {
     throw new Error('No rules provided to execute')
   }
@@ -20,9 +20,4 @@ const executeRules = (application, rules) => {
   }))
 
   return { results, passed: results.every((result) => result.passed === true) }
-}
-
-module.exports = {
-  executeRule,
-  executeRules
 }

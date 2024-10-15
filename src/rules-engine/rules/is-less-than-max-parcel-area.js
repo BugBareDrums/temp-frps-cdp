@@ -1,4 +1,4 @@
-const isLessThanMaximumParcelArea = (application, ruleConfig) => {
+export const isLessThanMaximumParcelArea = (application, ruleConfig) => {
   const {
     landParcel: { area }
   } = application
@@ -12,5 +12,3 @@ const isLessThanMaximumParcelArea = (application, ruleConfig) => {
       }
     : { passed }
 }
-
-module.exports = { isLessThanMaximumParcelArea }

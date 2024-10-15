@@ -1,20 +1,16 @@
-const {
-  supplementAreaMatchesParent
-} = require('./supplement-area-matches-parent')
-const { isForWholeParcelArea } = require('./is-for-whole-parcel-area')
-const { isBelowMoorlandLine } = require('./is-below-moorland-line')
-const { hasMinimumParcelArea } = require('./has-min-parcel-area')
-const {
-  isLessThanMaximumParcelArea
-} = require('./is-less-than-max-parcel-area')
-const {
-  isOutsideSda,
+import { hasMinimumParcelArea } from './has-min-parcel-area.js'
+import { isBelowMoorlandLine } from './is-below-moorland-line.js'
+import { isForWholeParcelArea } from './is-for-whole-parcel-area.js'
+import { isLessThanMaximumParcelArea } from './is-less-than-max-parcel-area.js'
+import { supplementAreaMatchesParent } from './supplement-area-matches-parent.js'
+import {
   hasPeatySoil,
-  noSSI,
-  noHeferFeatures
-} = require('./tag-based-rules')
+  isOutsideSda,
+  noHeferFeatures,
+  noSSI
+} from './tag-based-rules.js'
 
-const rules = {
+export const rules = {
   'supplement-area-matches-parent': supplementAreaMatchesParent,
   'is-below-moorland-line': isBelowMoorlandLine,
   'is-for-whole-parcel-area': isForWholeParcelArea,
@@ -25,5 +21,3 @@ const rules = {
   'no-sssi': noSSI,
   'no-hefer-features': noHeferFeatures
 }
-
-module.exports = { rules }
