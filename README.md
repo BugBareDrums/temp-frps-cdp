@@ -51,6 +51,12 @@ Install application dependencies:
 npm install
 ```
 
+Seed the database with development data:
+
+```bash
+npm run seed
+```
+
 ### Development
 
 To run the application in `development` mode run:
