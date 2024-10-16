@@ -8,32 +8,18 @@ module.exports = {
       extends: [
         'standard',
         'plugin:import/recommended',
-        'plugin:import/typescript',
-        'plugin:jsdoc/recommended-typescript-flavor',
         'plugin:n/recommended',
         'plugin:promise/recommended',
-        'plugin:@typescript-eslint/recommended-type-checked',
-        'plugin:@typescript-eslint/stylistic-type-checked',
         'prettier'
       ],
       env: {
         browser: false
       },
       files: ['**/*.{cjs,js}'],
-      parser: '@typescript-eslint/parser',
       parserOptions: {
-        ecmaVersion: 'latest',
-        project: ['./tsconfig.json'],
-        tsconfigRootDir: __dirname
+        ecmaVersion: 'latest'
       },
-      plugins: [
-        '@typescript-eslint',
-        'import',
-        'jsdoc',
-        'n',
-        'promise',
-        'prettier'
-      ],
+      plugins: ['import', 'jsdoc', 'n', 'promise', 'prettier'],
       rules: {
         'prettier/prettier': [
           'error',
@@ -42,13 +28,6 @@ module.exports = {
           }
         ],
         'no-console': 'error',
-
-        // Turn off strict type checking rules
-        '@typescript-eslint/no-unsafe-argument': 'off',
-        '@typescript-eslint/no-unsafe-assignment': 'off',
-        '@typescript-eslint/no-unsafe-call': 'off',
-        '@typescript-eslint/no-unsafe-member-access': 'off',
-        '@typescript-eslint/no-unsafe-return': 'off',
 
         // JSDoc blocks are optional by default
         'jsdoc/require-jsdoc': 'off',
@@ -79,12 +58,9 @@ module.exports = {
         'n/no-missing-import': 'off'
       },
       settings: {
-        'import/parsers': {
-          '@typescript-eslint/parser': ['.cjs', '.js']
-        },
         'import/resolver': {
-          node: true,
-          typescript: true
+          'babel-module': {},
+          node: true
         }
       }
     },
@@ -103,8 +79,6 @@ module.exports = {
         sourceType: 'commonjs'
       },
       rules: {
-        '@typescript-eslint/no-var-requires': 'off',
-
         // Allow require devDependencies
         'n/no-unpublished-require': [
           'error',
@@ -133,10 +107,6 @@ module.exports = {
       files: ['**/*.test.{cjs,js}', '**/__mocks__/**'],
       plugins: ['jest'],
       rules: {
-        // Allow Jest to assert on mocked unbound methods
-        '@typescript-eslint/unbound-method': 'off',
-        'jest/unbound-method': 'error',
-
         // Allow import devDependencies
         'n/no-unpublished-import': [
           'error',
