@@ -29,6 +29,7 @@ describe('#provideProxy', () => {
     let result
 
     beforeEach(() => {
+      // @ts-expect-error TS2345
       config.set('httpProxy', httpProxyUrl)
       result = provideProxy()
     })
@@ -54,6 +55,7 @@ describe('#provideProxy', () => {
     let result
 
     beforeEach(() => {
+      // @ts-expect-error TS2345
       config.set('httpsProxy', httpsProxyUrl)
       result = provideProxy()
     })
@@ -103,6 +105,7 @@ describe('#proxyFetch', () => {
 
   describe('When proxy is configured', () => {
     beforeEach(async () => {
+      // @ts-expect-error TS2345
       config.set('httpProxy', httpsProxyUrl)
       nock(secureUrl).get('/').reply(statusCodeOk, 'OK')
 

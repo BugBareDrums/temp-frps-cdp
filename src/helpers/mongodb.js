@@ -22,6 +22,7 @@ export const mongoDb = {
       const client = await MongoClient.connect(options.mongoUrl, {
         retryWrites: options.retryWrites,
         readPreference: options.readPreference,
+        // @ts-expect-error TS2339
         ...(server.secureContext && { secureContext: server.secureContext })
       })
 
@@ -33,12 +34,16 @@ export const mongoDb = {
 
       server.logger.info(`mongodb connected to ${databaseName}`)
 
+      // @ts-expect-error TS2769
       server.decorate('server', 'mongoClient', client)
+      // @ts-expect-error TS2769
       server.decorate('server', 'db', db)
+      // @ts-expect-error TS2769
       server.decorate('server', 'locker', locker)
       server.decorate('request', 'db', () => db, { apply: true })
       server.decorate('request', 'locker', () => locker, { apply: true })
 
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       server.events.on('stop', async () => {
         server.logger.info('Closing Mongo client')
         await client.close(true)
