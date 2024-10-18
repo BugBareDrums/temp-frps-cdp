@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom'
-import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/action-land-use-compatibility-matrix.js'
+import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/controllers/action-land-use-compatibility-matrix.js'
 import { getActions } from '~/src/api/land-action/index.js'
 
 const getActionsForLandUses = (landUseCodes) => {
