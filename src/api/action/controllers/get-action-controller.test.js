@@ -1,5 +1,25 @@
 import Hapi from '@hapi/hapi'
-import { action } from './index.js'
+import { action } from '../index.js'
+
+jest.mock('../helpers/find-all-actions.js', () => ({
+  findAllActions: jest.fn(() =>
+    Promise.resolve([
+      {
+        code: 'SAM1',
+        description:
+          'Assess soil, test soil organic matter and produce a soil management plan',
+        payment: {
+          amountPerHectare: 5.8,
+          additionalPaymentPerAgreement: 95
+        },
+        eligibilityRules: [
+          { id: 'is-below-moorland-line' },
+          { id: 'is-for-whole-parcel-area' }
+        ]
+      }
+    ])
+  )
+}))
 
 describe('Get Action controller', () => {
   const server = Hapi.server()
@@ -31,43 +51,14 @@ describe('Get Action controller', () => {
     }
     const response = await server.inject(request)
     expect(response.statusCode).toBe(200)
-
     expect(response.result).toEqual([
       {
         code: 'SAM1',
         description:
           'Assess soil, test soil organic matter and produce a soil management plan',
         payment: {
-          additionalPaymentPerAgreement: 95,
-          amountPerHectare: 5.8
-        }
-      },
-      {
-        code: 'SAM2',
-        description: 'Multi-species winter cover crop',
-        payment: { amountPerHectare: 129 }
-      },
-      {
-        code: 'AB3',
-        description: 'Beetle banks',
-        payment: {
-          amountPerHectare: 573.0
-        }
-      },
-      {
-        code: 'CSAM1',
-        description:
-          'Assess soil, produce a soil management plan and test soil organic matter',
-        payment: {
-          additionalPaymentPerAgreement: 97,
-          amountPerHectare: 6
-        }
-      },
-      {
-        code: 'CSAM2',
-        description: 'Multi-species winter cover crop',
-        payment: {
-          amountPerHectare: 129
+          amountPerHectare: 5.8,
+          additionalPaymentPerAgreement: 95
         }
       }
     ])

@@ -1,12 +1,14 @@
 import Boom from '@hapi/boom'
 import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/action-land-use-compatibility-matrix.js'
-import { getActions } from '~/src/api/land-action/index.js'
+import { findAllActions } from '../helpers/find-all-actions.js'
+
+let actions
 
 const getActionsForLandUses = (landUseCodes) => {
   if (!Array.isArray(landUseCodes)) {
     throw new TypeError('landUseCodes must be an array')
   }
-  const actions = getActions()
+
   return actions.filter((action) => {
     const compatibleLandUses =
       actionLandUseCompatibilityMatrix[action.code] || []
@@ -20,10 +22,14 @@ const getActionsForLandUses = (landUseCodes) => {
  */
 const getActionController = {
   /**
-   * @param { import('@hapi/hapi').Request } request
+   * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @returns {Promise<*>}
    */
-  handler: (request) => {
+  handler: async (request) => {
+    if (!actions) {
+      actions = await findAllActions(request.db)
+    }
+
     const parcelId = request.query['parcel-id']
     const landUseCodesString = request.query['land-use-codes']
     const preexistingActions = request.query['preexisting-actions']
@@ -52,4 +58,5 @@ export { getActionController }
 
 /**
  * @import { ServerRoute} from '@hapi/hapi'
+ * @import { MongoDBPlugin } from '~/src/helpers/mongodb.js'
  */
