@@ -1,4 +1,7 @@
 import { findAllCompatibleActions } from '~/src/api/action-compatibility-matrix/helpers/find-compatible-actions-data.js'
+import { initCache } from '~/src/helpers/cache.js'
+
+let cache
 
 /**
  * Example controller
@@ -12,11 +15,18 @@ const findCompatibleActions = {
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    const entities = await findAllCompatibleActions(
-      request.db,
-      request.params.action
-    )
+    if (!cache) {
+      cache = initCache(
+        request.server,
+        'compatibleActions',
+        async ({ action }) => await findAllCompatibleActions(request.db, action)
+      )
+    }
 
+    const entities = await cache.get({
+      id: request.params.action,
+      action: request.params.action
+    })
     return h.response({ message: 'success', entities }).code(200)
   }
 }
