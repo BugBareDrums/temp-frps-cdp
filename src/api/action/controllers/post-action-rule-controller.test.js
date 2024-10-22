@@ -1,6 +1,27 @@
 import Hapi from '@hapi/hapi'
-import { getAction } from '../land-action/index.js'
-import { action } from './index.js'
+import { action } from '../index.js'
+import { findAction } from '../helpers/find-action.js'
+
+/** @type { any | null } */
+let mockFindActionData = {
+  code: 'AB3',
+  description: 'Beetle banks',
+  payment: {
+    amountPerHectare: 573
+  },
+  eligibilityRules: [{ id: 'is-below-moorland-line' }]
+}
+
+jest.mock('../helpers/find-action.js', () => ({
+  findAction: jest.fn(() => Promise.resolve(mockFindActionData))
+}))
+
+jest.mock('../helpers/update-action.js', () => ({
+  updateAction: jest.fn((db, actionCode, action) => {
+    mockFindActionData = action
+    return Promise.resolve({})
+  })
+}))
 
 describe('Post Action Rule controller', () => {
   const server = Hapi.server()
@@ -29,7 +50,7 @@ describe('Post Action Rule controller', () => {
 
     expect(response.result?.message).toBe('Rule added successfully')
 
-    const action = getAction('AB3')
+    const action = await findAction(request.db, 'AB3')
     expect(action.eligibilityRules.some((rule) => rule.id === 'new-rule')).toBe(
       true
     )
@@ -44,6 +65,9 @@ describe('Post Action Rule controller', () => {
         config: {}
       }
     }
+
+    mockFindActionData = null
+
     /** @type {Hapi.ServerInjectResponse<{error: string}>} */
     const response = await server.inject(request)
     expect(response.statusCode).toBe(404)
@@ -59,9 +83,19 @@ describe('Post Action Rule controller', () => {
         config: {}
       }
     }
+
+    mockFindActionData = {
+      code: 'AB3',
+      description: 'Beetle banks',
+      payment: {
+        amountPerHectare: 573
+      },
+      eligibilityRules: []
+    }
+
     const response = await server.inject(request)
     expect(response.statusCode).toBe(200)
-    const action = getAction('AB3')
+    const action = await findAction(request.db, 'AB3')
     const ruleCount = action.eligibilityRules.filter(
       (rule) => rule.id === 'is-below-moorland-line'
     ).length
