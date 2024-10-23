@@ -1,20 +1,5 @@
 import Boom from '@hapi/boom'
-import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/action-land-use-compatibility-matrix.js'
-import { findAllActions } from '../helpers/find-all-actions.js'
-
-let actions
-
-const getActionsForLandUses = (landUseCodes) => {
-  if (!Array.isArray(landUseCodes)) {
-    throw new TypeError('landUseCodes must be an array')
-  }
-
-  return actions.filter((action) => {
-    const compatibleLandUses =
-      actionLandUseCompatibilityMatrix[action.code] || []
-    return landUseCodes.some((code) => compatibleLandUses.includes(code))
-  })
-}
+import { findAction } from '../helpers/find-action.js'
 
 /**
  *
@@ -25,32 +10,16 @@ const getActionController = {
    * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @returns {Promise<*>}
    */
-  handler: async (request) => {
-    if (!actions) {
-      actions = await findAllActions(request.db)
-    }
+  handler: async ({ db, params: { actionCode } }, h) => {
+    if (!actionCode || actionCode === '')
+      return Boom.boomify(Boom.badRequest('Missing actionCode query parameter'))
 
-    const parcelId = request.query['parcel-id']
-    const landUseCodesString = request.query['land-use-codes']
-    const preexistingActions = request.query['preexisting-actions']
-      ? request.query['preexisting-actions'].split(',')
-      : []
-    const landUseCodes = landUseCodesString ? landUseCodesString.split(',') : []
+    const action = await findAction(db, actionCode)
 
-    if (!parcelId) {
-      return Boom.boomify(Boom.badRequest('Missing parcel-id query parameter'))
-    }
+    if (!action)
+      return Boom.boomify(Boom.notFound(`Action ${actionCode} not found`))
 
-    const filteredActions = getActionsForLandUses(landUseCodes)
-      .filter((action) => !preexistingActions.includes(action.code))
-      .map((action) => {
-        return {
-          code: action.code,
-          description: action.description,
-          payment: action.payment
-        }
-      })
-    return Promise.resolve(filteredActions)
+    return h.response({ action }).code(200)
   }
 }
 

@@ -1,4 +1,5 @@
 import { getActionController } from './controllers/get-action-controller.js'
+import { getAllActionsController } from './controllers/get-all-actions-controller.js'
 import { postActionRuleController } from './controllers/post-action-rule-controller.js'
 
 /**
@@ -11,8 +12,13 @@ const action = {
       server.route([
         {
           method: 'GET',
-          path: '/action',
+          path: '/action/{actionCode}',
           ...getActionController
+        },
+        {
+          method: 'GET',
+          path: '/actions',
+          ...getAllActionsController
         },
         {
           method: 'POST',

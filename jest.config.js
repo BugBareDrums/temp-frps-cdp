@@ -7,7 +7,7 @@ export default {
   verbose: true,
   resetModules: true,
   clearMocks: true,
-  silent: true,
+  // silent: true,
   testMatch: ['**/src/**/*.test.js'],
   reporters: ['default', ['github-actions', { silent: false }], 'summary'],
   collectCoverageFrom: ['src/**/*.js'],
