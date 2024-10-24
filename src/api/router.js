@@ -3,7 +3,7 @@ import { example } from '~/src/api/example/index.js'
 import { importData } from '~/src/api/import-data/index.js'
 import { actionCompatibilityMatrix } from '~/src/api/action-compatibility-matrix/index.js'
 import { action } from '~/src/api/action/index.js'
-import { landParcel } from '~/src/api//land-parcel/index.js'
+import { land } from '~/src/api/land/index.js'
 
 /**
  * @satisfies { import('@hapi/hapi').ServerRegisterPluginObject<*> }
@@ -24,8 +24,8 @@ const router = {
       // Get Actions
       await server.register([action])
 
-      // Get Land Parcels
-      await server.register([landParcel])
+      // Land - Parcels, Cover
+      await server.register([land])
 
       // Application specific routes, add your own routes here.
       await server.register([example])

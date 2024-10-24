@@ -6,19 +6,19 @@ import {
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
-const landParcel = {
+const land = {
   plugin: {
-    name: 'land-parcel',
+    name: 'land',
     register: (server) => {
       server.route([
         {
           method: 'GET',
-          path: '/land-parcel/{landParcelId}',
+          path: '/land/parcel/{landParcelId}',
           ...findLandParcelController
         },
         {
           method: 'GET',
-          path: '/land-cover/{landParcelId}',
+          path: '/land/cover/{landParcelId}',
           ...findLandCoverController
         }
       ])
@@ -26,7 +26,7 @@ const landParcel = {
   }
 }
 
-export { landParcel }
+export { land }
 
 /**
  * @import { ServerRegisterPluginObject } from '@hapi/hapi'
