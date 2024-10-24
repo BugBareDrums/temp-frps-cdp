@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import convict from 'convict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -121,6 +122,39 @@ const config = convict({
       format: String,
       default: 'changeme',
       env: 'CRM_API_PASSWORD'
+    }
+  },
+  arcGis: {
+    client_id: {
+      doc: 'The client ID for ArcGIS in order to establish a token',
+      format: String,
+      default: 'changeme',
+      env: 'ARCGIS_CLIENT_ID',
+      sensitive: true
+    },
+    client_secret: {
+      doc: 'The client secret for ArcGIS in order to establish a token',
+      format: String,
+      default: 'changeme',
+      env: 'ARCGIS_CLIENT_SECRET'
+    },
+    grant_type: {
+      doc: 'The ArcGIS permissions to be granted with the token',
+      format: String,
+      default: 'client_credentials',
+      env: 'ARCGIS_GRANT_TYPE'
+    },
+    username: {
+      doc: 'The ArcGIS account username to authenticate the old school way',
+      format: String,
+      default: 'changeme',
+      env: 'ARCGIS_USERNAME'
+    },
+    password: {
+      doc: 'The ArcGIS account password to authenticate the old school way',
+      format: String,
+      default: 'changeme',
+      env: 'ARCGIS_PASSWORD'
     }
   }
 })
