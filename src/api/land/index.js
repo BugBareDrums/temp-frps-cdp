@@ -1,6 +1,7 @@
 import {
   findLandParcelController,
-  findLandCoverController
+  findLandCoverController,
+  findLandCoverCodeController
 } from './controllers/index.js'
 
 /**
@@ -20,6 +21,11 @@ const land = {
           method: 'GET',
           path: '/land/cover/{landParcelId}',
           ...findLandCoverController
+        },
+        {
+          method: 'GET',
+          path: '/land/code/{landCoverCode}',
+          ...findLandCoverCodeController
         }
       ])
     }
