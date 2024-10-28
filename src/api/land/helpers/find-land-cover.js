@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
 
 /**

@@ -1,5 +1,5 @@
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
-
+import fetch from 'node-fetch'
 /**
  * Finds and returns a single land parcel from ArcGIS.
  * @param { import('@hapi/hapi').Server } server
