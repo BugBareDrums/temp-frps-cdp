@@ -38,7 +38,7 @@ export const farmers = [
               moorlandLineStatus: 'below'
             }
           }
-        ],
+        ]
       },
       {
         name: 'Apple Farm',

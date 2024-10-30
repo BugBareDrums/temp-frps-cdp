@@ -1,23 +1,25 @@
 import fetch from 'node-fetch'
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
+import { findLandCoverCode } from './find-land-cover-code.js'
 
 /**
  * Finds and returns the latest land parcel from ArcGIS for each specified PARCEL_ID.
- * @param { import('@hapi/hapi').Request } request
+ * @param { import('@hapi/hapi').Request & MongoDBPlugin  } request
  * @param { string } sbi
  * @returns {Promise<Array<{}>>}
  */
 async function findLandParcelsBySbi({ server, db }, sbi) {
+  // eslint-disable-next-line camelcase
   const { access_token } = await arcgisTokenCache(server).get('arcgis_token')
 
   // look up SBI in mongo to return a business
-  const results = db.collection('farmers').find({ "companies.sbi": sbi });
-  const user = await results.toArray();
-  const company = user[0].companies.filter(company => company.sbi === sbi)
+  const results = db.collection('farmers').find({ 'companies.sbi': sbi })
+  const user = await results.toArray()
+  const company = user[0].companies.filter((company) => company.sbi === sbi)
 
-  // Define the parcel IDs and build the `where` clause
+  // Get the parcels
   const parcels = company[0].parcels
-  const parcelIds = parcels.map(parcel => parcel.id)
+  const parcelIds = parcels.map((parcel) => parcel.id)
 
   // Create a single query URL
   const url = new URL(
@@ -25,7 +27,7 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
   )
   url.searchParams.set('token', access_token)
   url.searchParams.set('f', 'geojson')
-  url.searchParams.set('resultRecordCount', 1) // Set higher limit to capture potential duplicates
+  url.searchParams.set('resultRecordCount', '1') // Set higher limit to capture potential duplicates
   url.searchParams.set('outFields', '*')
   url.searchParams.set('where', `PARCEL_ID IN (${parcelIds.toString()})`)
   url.searchParams.set('orderByFields', 'LAST_REFRESH_DATE DESC') // Order by latest date first
@@ -33,35 +35,35 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
   const response = await fetch(url)
   const data = await response.json()
 
-  // Reduce to ensure only the latest record for each `PARCEL_ID`
-  // TODO - Aggregate the features and add the areas
-  // const uniqueParcels = data.features.reduce((acc, feature) => {
-  //   const parcelId = feature.properties.PARCEL_ID
-  //   if (!acc.some(f => f.properties.PARCEL_ID === parcelId)) {
-  //     acc.push(feature)
-  //   }
-  //   return acc
-  // }, [])
+  const classCode = await getLandCoverClassCode(
+    access_token,
+    // @ts-expect-error this is demo data so it doesn't really matter
+    data.features[0].properties.PARCEL_ID
+  )
 
-  // TODO BS call land_cover  ep w parcelId, then call/use land_code to get populate land use
-  // TODO BS add farmer tech-demo data to end of response
-  // Transform and return only the array of parcels (no wrapping object)
-  // getLandCoverClassCode(access_token, data.features[0].properties.PARCEL_ID).then((data) => {
-  //   console.log('LAND_COVER_CLASS_CODE::' + JSON.stringify(data, null, 2))
-  // })
+  const classCodeInfo = await findLandCoverCode(db, classCode)
 
-
-  return transformParcelData(sbi, parcels, { entity: { features: data.features } })
+  return transformParcelData(sbi, parcels, classCodeInfo, {
+    // @ts-expect-error this is demo data so it doesn't really matter
+    entity: { features: data.features }
+  })
 }
 
 /**
  * Transforms the parcel data from ArcGIS format to a simplified format.
- * @param {Object} json - JSON data with `features` array inside `entity`.
+ * @param {string} sbi - JSON data with `features` array inside `entity`.
+ * @param {Array} parcels - JSON data with `features` array inside `entity`.
+ * @param {object} classCodeInfo - JSON data with `features` array inside `entity`.
+ * @param {object} json - JSON data with `features` array inside `entity`.
  * @returns {Array} Transformed data for each parcel.
  */
-function transformParcelData(sbi, parcels, json) {
-  return json.entity.features.map(feature => {
-    const properties = feature.properties;
+function transformParcelData(sbi, parcels, classCodeInfo, json) {
+  return json.entity.features.map((feature) => {
+    const properties = feature.properties
+    const { attributes, agreements } = parcels.find(
+      (parcel) => parcel.id === properties.PARCEL_ID
+    )
+
     return {
       id: properties.id,
       sbi,
@@ -81,35 +83,35 @@ function transformParcelData(sbi, parcels, json) {
       wktFormatGeometry: properties.F_geometrywkt,
       shapeArea: properties.Shape__Area,
       shapeLength: properties.Shape__Length,
-      landCovers: [],
-      agreements: [],
+      landCovers: classCodeInfo,
+      agreements,
       landUseList: [],
-      attributes: {
-        moorlandLineStatus: 'below'
-      }
-    };
-  });
+      attributes
+    }
+  })
 }
 
-async function getLandCoverClassCode(access_token, parcelId) {
-  
+async function getLandCoverClassCode(accessToken, parcelId) {
   // Construct the query URL for ArcGIS
   const url = new URL(
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0/query?'
-  );
-  url.searchParams.set('where', `PARCEL_ID='${parcelId}'`);
-  url.searchParams.set('outFields', 'LAND_COVER_CLASS_CODE');
-  url.searchParams.set('resultRecordCount', '1');
-  url.searchParams.set('f', 'geojson');
-  url.searchParams.set('token', access_token);
+  )
+  url.searchParams.set('where', `PARCEL_ID='${parcelId}'`)
+  url.searchParams.set('outFields', 'LAND_COVER_CLASS_CODE')
+  url.searchParams.set('resultRecordCount', '1')
+  url.searchParams.set('f', 'geojson')
+  url.searchParams.set('token', accessToken)
 
-  const response = await fetch(url);
-  const data = await response.json();
+  const response = await fetch(url)
+  const data = await response.json()
 
   // Extract and return the LAND_COVER_CLASS_CODE if it exists
-  const landCoverClassCode = data.features?.[0]?.properties?.LAND_COVER_CLASS_CODE || null;
-  return { LAND_COVER_CLASS_CODE: landCoverClassCode };
+  const landCoverClassCode =
+    // @ts-expect-error this is demo data so it doesn't really matter for now
+    data.features?.[0]?.properties?.LAND_COVER_CLASS_CODE || null
+  return landCoverClassCode
 }
 
-
 export { findLandParcelsBySbi }
+
+/** @import { MongoDBPlugin } from '~/src/helpers/mongodb.js' */

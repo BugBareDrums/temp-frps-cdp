@@ -18,11 +18,12 @@ const findLandCoverCodeController = {
       request.db,
       request.params.landCoverCode
     )
+
     if (isNull(entity)) {
       return Boom.boomify(Boom.notFound())
     }
 
-    return h.response({ message: 'success', entity }).code(200)
+    return h.response(entity).code(200)
   }
 }
 

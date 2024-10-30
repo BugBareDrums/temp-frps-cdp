@@ -1,16 +1,17 @@
-const deepSearchPruneUpwards = (data, value) =>
-  data.flatMap((item) => {
-    if (item.code === value) return [{ ...item }]
+const deepSearch = (data, value) => {
+  if (data.code === value) return data
 
-    const nestedKeys = ['classes', 'covers', 'uses']
-    for (const nestedKey of nestedKeys) {
-      if (item[nestedKey]) {
-        const result = deepSearchPruneUpwards(item[nestedKey], value)
-        if (result.length) return [{ ...item, [nestedKey]: result }]
+  for (const key of ['classes', 'covers', 'uses']) {
+    if (data[key]) {
+      for (const item of data[key]) {
+        const result = deepSearch(item, value)
+        if (result) return result
       }
     }
-    return []
-  })
+  }
+
+  return null
+}
 
 /**
  * Finds and returns land cover for a single land parcel from ArcGIS.
@@ -32,7 +33,7 @@ async function findLandCoverCode(db, landCoverCode) {
   )
 
   const resultArray = await result.toArray()
-  return deepSearchPruneUpwards(resultArray, landCoverCode)
+  return deepSearch(resultArray[0], landCoverCode.toString())
 }
 
 export { findLandCoverCode }
