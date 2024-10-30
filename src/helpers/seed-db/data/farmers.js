@@ -22,12 +22,29 @@ export const farmers = [
       {
         name: 'Imaginary Farm',
         id: 'imaginary-farm',
-        sbi: '908789876'
+        sbi: '908789876',
+        parcels: [
+          {
+            id: '5351',
+            agreements: [],
+            attributes: {
+              moorlandLineStatus: 'below'
+            }
+          },
+          {
+            id: '6202',
+            agreements: [],
+            attributes: {
+              moorlandLineStatus: 'below'
+            }
+          }
+        ],
       },
       {
         name: 'Apple Farm',
         id: 'apple-farm',
-        sbi: '678987809'
+        sbi: '678987809',
+        parcels: []
       }
     ]
   },
@@ -54,7 +71,8 @@ export const farmers = [
       {
         name: 'Berry Farm',
         id: 'berry-farm',
-        sbi: '786756789'
+        sbi: '786756789',
+        parcels: []
       }
     ]
   },
@@ -81,7 +99,8 @@ export const farmers = [
       {
         name: 'Green Farm',
         id: 'green-farm',
-        sbi: '767892234'
+        sbi: '767892234',
+        parcels: []
       }
     ]
   }

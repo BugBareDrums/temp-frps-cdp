@@ -15,7 +15,7 @@ const findLandParcelBySbiController = {
    */
   handler: async (request, h) => {
     const entity = await findLandParcelsBySbi(
-      request.server,
+      request,
       request.params.sbi
     )
     if (isNull(entity)) {
