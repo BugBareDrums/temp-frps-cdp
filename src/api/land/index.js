@@ -14,12 +14,12 @@ const land = {
       server.route([
         {
           method: 'GET',
-          path: '/land/parcel/{landParcelId}',
+          path: '/land/parcel/id/{landParcelId}',
           ...findLandParcelController
         },
         {
           method: 'GET',
-          path: '/land/parcel/sbi/{sbi}', // TODO BS change to /land/parcel/{sbi} or alter lanParcelId above
+          path: '/land/parcel/{sbi}',
           ...findLandParcelBySbiController
         },
         {
