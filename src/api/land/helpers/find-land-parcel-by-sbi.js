@@ -8,8 +8,8 @@ import { findLandCoverCode } from './find-land-cover-code.js'
  * @returns {Promise<Array<{}>>}
  */
 async function findLandParcelsBySbi({ server, db }, sbi) {
-  // eslint-disable-next-line camelcase
-  const { access_token } = await arcgisTokenCache(server).get('arcgis_token')
+  const { access_token: accessToken } =
+    await arcgisTokenCache(server).get('arcgis_token')
 
   // look up SBI in mongo to return a business
   const results = db.collection('farmers').find({ 'companies.sbi': sbi })
@@ -24,7 +24,7 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
   const url = new URL(
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/LMS_reference_parcels/FeatureServer/0/query?'
   )
-  url.searchParams.set('token', access_token)
+  url.searchParams.set('token', accessToken)
   url.searchParams.set('f', 'geojson')
   url.searchParams.set('resultRecordCount', '1') // Set higher limit to capture potential duplicates
   url.searchParams.set('outFields', '*')
@@ -35,7 +35,7 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
   const data = await response.json()
 
   const classCode = await getLandCoverClassCode(
-    access_token,
+    accessToken,
     data.features[0].properties.PARCEL_ID
   )
 
@@ -48,9 +48,9 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
 
 /**
  * Transforms the parcel data from ArcGIS format to a simplified format.
- * @param {string} sbi - JSON data with `features` array inside `entity`.
- * @param {Array} parcels - JSON data with `features` array inside `entity`.
- * @param {object} classCodeInfo - JSON data with `features` array inside `entity`.
+ * @param {string} sbi - Single Business ID in string format.
+ * @param {Array} parcels - Array of land parcels.
+ * @param {object} classCodeInfo - the raw data from the class code endpoint.
  * @param {object} json - JSON data with `features` array inside `entity`.
  * @returns {Array} Transformed data for each parcel.
  */
