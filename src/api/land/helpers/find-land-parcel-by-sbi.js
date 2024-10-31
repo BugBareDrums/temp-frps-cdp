@@ -83,9 +83,12 @@ function transformParcelData(sbi, parcels, classCodeInfo, json) {
       wktFormatGeometry: properties.F_geometrywkt,
       shapeArea: properties.Shape__Area,
       shapeLength: properties.Shape__Length,
-      landCovers: classCodeInfo,
+      landCovers: {
+        code: classCodeInfo.code,
+        name: classCodeInfo.name
+      },
       agreements,
-      landUseList: [],
+      landUseList: classCodeInfo.uses,
       attributes
     }
   })
