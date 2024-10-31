@@ -1,7 +1,5 @@
 import { config } from '~/src/config/index.js'
 import { initCache } from '../cache.js'
-import FormData from 'form-data'
-import fetch from 'node-fetch'
 
 const getUserToken = async () => {
   const url = new URL('https://www.arcgis.com/sharing/rest/generateToken')
@@ -11,7 +9,12 @@ const getUserToken = async () => {
   body.append('referer', '*')
   body.append('f', 'json')
 
-  const response = await fetch(url, { method: 'post', body })
+  const response = await fetch(url, {
+    method: 'post',
+    body
+  })
+
+  /** @type { object } */
   const json = await response.json()
 
   return {

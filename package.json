@@ -52,7 +52,6 @@
     "lodash": "^4.17.21",
     "mongo-locks": "^3.0.2",
     "mongodb": "^6.8.1",
-    "node-fetch": "3.3.2",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
     "undici": "^6.19.8"

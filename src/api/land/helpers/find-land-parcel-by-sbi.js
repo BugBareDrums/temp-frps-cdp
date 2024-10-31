@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
 import { findLandCoverCode } from './find-land-cover-code.js'
 
@@ -37,14 +36,12 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
 
   const classCode = await getLandCoverClassCode(
     access_token,
-    // @ts-expect-error this is demo data so it doesn't really matter
     data.features[0].properties.PARCEL_ID
   )
 
   const classCodeInfo = await findLandCoverCode(db, classCode)
 
   return transformParcelData(sbi, parcels, classCodeInfo, {
-    // @ts-expect-error this is demo data so it doesn't really matter
     entity: { features: data.features }
   })
 }
@@ -110,7 +107,6 @@ async function getLandCoverClassCode(accessToken, parcelId) {
 
   // Extract and return the LAND_COVER_CLASS_CODE if it exists
   const landCoverClassCode =
-    // @ts-expect-error this is demo data so it doesn't really matter for now
     data.features?.[0]?.properties?.LAND_COVER_CLASS_CODE || null
   return landCoverClassCode
 }

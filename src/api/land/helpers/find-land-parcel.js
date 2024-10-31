@@ -1,5 +1,5 @@
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
-import fetch from 'node-fetch'
+
 /**
  * Finds and returns a single land parcel from ArcGIS.
  * @param { import('@hapi/hapi').Server } server
@@ -19,6 +19,7 @@ async function findLandParcel(server, landParcelId) {
   url.searchParams.set('outFields', '*')
   url.searchParams.set('where', `PARCEL_ID='${landParcelId}'`)
 
+  /** @type { Response } */
   const response = await fetch(url)
   return await response.json()
 }

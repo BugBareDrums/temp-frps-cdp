@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import { arcgisTokenCache } from '~/src/helpers/arcgis-token/index.js'
 
 /**
@@ -20,6 +19,7 @@ async function findLandCover(server, landParcelId) {
   url.searchParams.set('outFields', '*')
   url.searchParams.set('where', `PARCEL_ID='${landParcelId}'`)
 
+  /** @type { Response } */
   const response = await fetch(url)
   return await response.json()
 }
