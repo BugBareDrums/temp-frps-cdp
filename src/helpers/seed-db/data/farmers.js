@@ -8,11 +8,6 @@ export const farmers = [
     mobilePhone: '012345678',
     businesSize: 'Micro',
     numberOfEmployees: 5,
-    areasManaged: {
-      agricultural: '20 Hectares',
-      horticultural: '5 Hectares',
-      woodland: '5 Hectares'
-    },
     registeredOwner: 'Farmer Sarah',
     gender: 'Female',
     address: 'Imaginary Farm Co, Suffolk, SF1 23ED',
@@ -26,14 +21,28 @@ export const farmers = [
         parcels: [
           {
             id: '5351',
+            sheetId: 'TQ6506',
             agreements: [],
+            landUseList: [
+              {
+                code: 'PG01',
+                area: '4.2'
+              }
+            ],
             attributes: {
               moorlandLineStatus: 'below'
             }
           },
           {
             id: '6202',
+            sheetId: 'TR2467',
             agreements: [],
+            landUseList: [
+              {
+                code: 'IW03',
+                area: '20'
+              }
+            ],
             attributes: {
               moorlandLineStatus: 'below'
             }
