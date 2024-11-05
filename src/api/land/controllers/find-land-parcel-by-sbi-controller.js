@@ -16,7 +16,7 @@ const findLandParcelBySbiController = {
   handler: async (request, h) => {
     const entity = await findLandParcelsBySbi(request, request.params.sbi)
     if (isNull(entity)) {
-      return Boom.boomify(Boom.notFound())
+      return Boom.notFound()
     }
 
     return h.response(entity).code(200)

@@ -19,7 +19,7 @@ const findLandCoverController = {
       request.params.landParcelId
     )
     if (isNull(entity)) {
-      return Boom.boomify(Boom.notFound())
+      return Boom.notFound()
     }
 
     return h.response({ message: 'success', entity }).code(200)

@@ -20,7 +20,7 @@ const findLandCoverCodeController = {
     )
 
     if (isNull(entity)) {
-      return Boom.boomify(Boom.notFound())
+      return Boom.notFound()
     }
 
     return h.response(entity).code(200)

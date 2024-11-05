@@ -38,7 +38,7 @@ const getAllActionsController = {
     const landUseCodes = landUseCodesString ? landUseCodesString.split(',') : []
 
     if (!parcelId) {
-      return Boom.boomify(Boom.badRequest('Missing parcel-id query parameter'))
+      return Boom.badRequest('Missing parcel-id query parameter')
     }
 
     const filteredActions = getActionsForLandUses(landUseCodes)
