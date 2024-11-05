@@ -1,32 +1,29 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { findLandCover } from '../helpers/find-land-cover.js'
+import { findLandParcelsBySbi } from '../helpers/find-land-parcel-by-sbi.js'
 
 /**
  *
  * @satisfies {Partial<ServerRoute>}
  */
-const findLandCoverController = {
+const findLandParcelBySbiController = {
   /**
    * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @param { import('@hapi/hapi').ResponseToolkit } h
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    const entity = await findLandCover(
-      request.server,
-      request.params.landParcelId
-    )
+    const entity = await findLandParcelsBySbi(request, request.params.sbi)
     if (isNull(entity)) {
       return Boom.notFound()
     }
 
-    return h.response({ message: 'success', entity }).code(200)
+    return h.response(entity).code(200)
   }
 }
 
-export { findLandCoverController }
+export { findLandParcelBySbiController }
 
 /**
  * @import { ServerRoute} from '@hapi/hapi'

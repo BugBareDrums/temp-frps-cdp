@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom'
-import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/action-land-use-compatibility-matrix.js'
+import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/helpers/action-land-use-compatibility-matrix.js'
 import { findAllActions } from '../helpers/find-all-actions.js'
 
 let actions
@@ -38,7 +38,7 @@ const getAllActionsController = {
     const landUseCodes = landUseCodesString ? landUseCodesString.split(',') : []
 
     if (!parcelId) {
-      return Boom.boomify(Boom.badRequest('Missing parcel-id query parameter'))
+      return Boom.badRequest('Missing parcel-id query parameter')
     }
 
     const filteredActions = getActionsForLandUses(landUseCodes)

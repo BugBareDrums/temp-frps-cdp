@@ -1,9 +1,9 @@
 import {
   findLandParcelController,
+  findLandParcelBySbiController,
   findLandCoverController,
   findLandCoverCodeController
 } from './controllers/index.js'
-
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
@@ -14,8 +14,13 @@ const land = {
       server.route([
         {
           method: 'GET',
-          path: '/land/parcel/{landParcelId}',
+          path: '/land/parcel/id/{landParcelId}',
           ...findLandParcelController
+        },
+        {
+          method: 'GET',
+          path: '/land/parcel/{sbi}',
+          ...findLandParcelBySbiController
         },
         {
           method: 'GET',

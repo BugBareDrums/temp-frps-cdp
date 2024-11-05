@@ -5,7 +5,7 @@ import { findAction } from '../helpers/find-action.js'
  *
  * @satisfies {Partial<ServerRoute>}
  */
-const getActionController = {
+const actionValidationController = {
   /**
    * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @returns {Promise<*>}
@@ -22,7 +22,7 @@ const getActionController = {
   }
 }
 
-export { getActionController }
+export { actionValidationController }
 
 /**
  * @import { ServerRoute} from '@hapi/hapi'

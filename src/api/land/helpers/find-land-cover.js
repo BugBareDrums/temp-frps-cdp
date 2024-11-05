@@ -11,14 +11,15 @@ async function findLandCover(server, landParcelId) {
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0/query'
   )
 
-  // eslint-disable-next-line camelcase
-  const { access_token } = await arcgisTokenCache(server).get('arcgis_token')
-  url.searchParams.set('token', access_token)
+  const { access_token: accessToken } =
+    await arcgisTokenCache(server).get('arcgis_token')
+  url.searchParams.set('token', accessToken)
   url.searchParams.set('f', 'geojson')
   url.searchParams.set('resultRecordCount', '10')
   url.searchParams.set('outFields', '*')
   url.searchParams.set('where', `PARCEL_ID='${landParcelId}'`)
 
+  /** @type { Response } */
   const response = await fetch(url)
   return await response.json()
 }

@@ -1,25 +1,6 @@
 import { config } from '~/src/config/index.js'
 import { initCache } from '../cache.js'
 
-// const getOAuthToken = async () => {
-//   const url = new URL('https://www.arcgis.com/sharing/rest/oauth2/token')
-//   const body = new FormData()
-//   body.append('client_id', config.get('arcGis.client_id'))
-//   body.append('client_secret', config.get('arcGis.client_secret'))
-//   body.append('grant_type', config.get('arcGis.grant_type'))
-
-//   const response = await fetch(url, {
-//     method: 'post',
-//     body
-//   })
-
-//   const json = await response.json()
-//   return {
-//     id: 'token',
-//     access_token: json.access_token
-//   }
-// }
-
 const getUserToken = async () => {
   const url = new URL('https://www.arcgis.com/sharing/rest/generateToken')
   const body = new FormData()
@@ -28,7 +9,12 @@ const getUserToken = async () => {
   body.append('referer', '*')
   body.append('f', 'json')
 
-  const response = await fetch(url, { method: 'post', body })
+  const response = await fetch(url, {
+    method: 'post',
+    body
+  })
+
+  /** @type { object } */
   const json = await response.json()
 
   return {

@@ -15,11 +15,11 @@ const postActionRuleController = {
     const action = await findAction(request.db, request.params.actionCode)
 
     if (!action) {
-      return Boom.boomify(Boom.notFound('Action not found'))
+      return Boom.notFound('Action not found')
     }
 
     if (!request.payload) {
-      return Boom.boomify(Boom.badRequest('New rule not provided'))
+      return Boom.badRequest('New rule not provided')
     }
 
     action.eligibilityRules.push(request.payload)

@@ -8,11 +8,6 @@ export const farmers = [
     mobilePhone: '012345678',
     businesSize: 'Micro',
     numberOfEmployees: 5,
-    areasManaged: {
-      agricultural: '20 Hectares',
-      horticultural: '5 Hectares',
-      woodland: '5 Hectares'
-    },
     registeredOwner: 'Farmer Sarah',
     gender: 'Female',
     address: 'Imaginary Farm Co, Suffolk, SF1 23ED',
@@ -22,12 +17,43 @@ export const farmers = [
       {
         name: 'Imaginary Farm',
         id: 'imaginary-farm',
-        sbi: '908789876'
+        sbi: '908789876',
+        parcels: [
+          {
+            id: '5351',
+            sheetId: 'TQ6506',
+            agreements: [],
+            landUseList: [
+              {
+                code: 'PG01',
+                area: '4.2'
+              }
+            ],
+            attributes: {
+              moorlandLineStatus: 'below'
+            }
+          },
+          {
+            id: '6202',
+            sheetId: 'TR2467',
+            agreements: [],
+            landUseList: [
+              {
+                code: 'IW03',
+                area: '20'
+              }
+            ],
+            attributes: {
+              moorlandLineStatus: 'below'
+            }
+          }
+        ]
       },
       {
         name: 'Apple Farm',
         id: 'apple-farm',
-        sbi: '678987809'
+        sbi: '678987809',
+        parcels: []
       }
     ]
   },
@@ -54,7 +80,8 @@ export const farmers = [
       {
         name: 'Berry Farm',
         id: 'berry-farm',
-        sbi: '786756789'
+        sbi: '786756789',
+        parcels: []
       }
     ]
   },
@@ -81,7 +108,8 @@ export const farmers = [
       {
         name: 'Green Farm',
         id: 'green-farm',
-        sbi: '767892234'
+        sbi: '767892234',
+        parcels: []
       }
     ]
   }
