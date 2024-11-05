@@ -15,6 +15,7 @@ async function findLandParcelsBySbi({ server, db }, sbi) {
   const results = db.collection('farmers').find({ 'companies.sbi': sbi })
   const user = await results.toArray()
   const company = user[0].companies.filter((company) => company.sbi === sbi)
+  console.log('COMMANY::', JSON.stringify(company))
 
   // Get the parcels
   const parcels = company[0].parcels
