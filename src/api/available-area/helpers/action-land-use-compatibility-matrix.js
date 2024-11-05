@@ -3,83 +3,32 @@ function applyUpdate(newEntries, actionCombinationLandUseCompatibilityMatrix) {
     actionCombinationLandUseCompatibilityMatrix[key] = newEntries[key]
   }
 }
+// TODO given below, make an array of all possible combinations of actions for each land use code (result should look like this) ...
+// const ACTION_COMBO_LAND_USE_COMPATIBILITY_MATRIX = {
+//   TG01: [['CSAM1', 'CSAM3'], ['CSAM3'], ['CSAM3', 'CSAM1']]
+// }
 
-// TODO - given list of actions compatible w land use code, and action compatibility matrix,
-//  create an algorithm to generate matrix of possible combinations instead of hardcoding combinations
-const ACTION_COMBO_LAND_USE_COMPATIBILITY_MATRIX = {
-  AC32: [
-    ['CSAM3'],
-    ['CSAM3', 'SAM1'],
-    ['CSAM3', 'CSAM1'],
-    ['SAM1', 'SAM2'],
-    ['SAM1'],
-    ['SAM2'],
-    ['AB3'],
-    ['SAM1', 'AB3'],
-    ['CSAM1', 'SAM2'],
-    ['CSAM1'],
-    ['CSAM1', 'AB3'],
-    ['CSAM2'],
-    ['CSAM2', 'SAM1'],
-    ['CSAM2', 'CSAM1'],
-    ['CSAM2', 'AB3'],
-    ['CSAM2', 'SAM1', 'CSAM1'],
-    ['CSAM2', 'SAM1', 'AB3'],
-    ['CSAM2', 'CSAM1', 'AB3']
-  ],
-  PG01: [
-    ['CSAM3'],
-    ['CSAM3', 'SAM1'],
-    ['CSAM3', 'CSAM1'],
-    ['SAM1', 'SAM3'],
-    ['SAM1', 'LIG1'],
-    ['SAM1', 'GRH1'],
-    ['SAM1'],
-    ['SAM3'],
-    ['LIG1'],
-    ['GRH1'],
-    ['CSAM1', 'SAM3'],
-    ['CSAM1', 'LIG1'],
-    ['CSAM1', 'GRH1'],
-    ['CSAM1']
-  ],
-  TG01: [
-    ['AB3'],
-    ['AB3', 'CSAM1'],
-    ['AB3', 'SAM1'],
-    ['CSAM1'],
-    ['CSAM1', 'AB3'],
-    ['CSAM1', 'CSAM2'],
-    ['CSAM1', 'CSAM3'],
-    ['CSAM1', 'GRH1'],
-    ['CSAM1', 'LIG1'],
-    ['CSAM1', 'SAM2'],
-    ['CSAM1', 'SAM3'],
-    ['CSAM2'],
-    ['CSAM2', 'SAM1'],
-    ['CSAM3'],
-    ['CSAM3', 'CSAM1'],
-    ['CSAM3', 'SAM1'],
-    ['GRH1'],
-    ['GRH1', 'CSAM1'],
-    ['GRH1', 'SAM1'],
-    ['LIG1'],
-    ['LIG1', 'CSAM1'],
-    ['LIG1', 'SAM1'],
-    ['SAM1'],
-    ['SAM1', 'AB3'],
-    ['SAM1', 'CSAM2'],
-    ['SAM1', 'CSAM3'],
-    ['SAM1', 'GRH1'],
-    ['SAM1', 'LIG1'],
-    ['SAM1', 'SAM2'],
-    ['SAM1', 'SAM3'],
-    ['SAM2'],
-    ['SAM2', 'CSAM1'],
-    ['SAM2', 'SAM1'],
-    ['SAM3'],
-    ['SAM3', 'CSAM1'],
-    ['SAM3', 'SAM1']
+const LAND_USE_ACTION_INDEX = {
+  TG01: ['CSAM1', 'CSAM3', 'CSAM2']
+}
+
+const ACTION_COMPAT_OBJECT = {
+  message: 'success',
+  entities: [
+    {
+      option_code: 'CSAM3',
+      option_code_compatibility: 'CSAM1',
+      type: 'BASECO',
+      description: 'Options are compatible at LAND USE LEVEL',
+      year: '2024'
+    },
+    {
+      option_code: 'BLA',
+      option_code_compatibility: 'CSAM1',
+      type: 'BASECO',
+      description: 'Options are compatible at LAND USE LEVEL',
+      year: '2024'
+    }
   ]
 }
 
