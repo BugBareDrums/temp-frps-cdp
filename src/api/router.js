@@ -4,6 +4,7 @@ import { importData } from '~/src/api/import-data/index.js'
 import { actionCompatibilityMatrix } from '~/src/api/action-compatibility-matrix/index.js'
 import { action } from '~/src/api/action/index.js'
 import { land } from '~/src/api/land/index.js'
+import { availableArea } from './available-area/index.js'
 
 /**
  * @satisfies { import('@hapi/hapi').ServerRegisterPluginObject<*> }
@@ -23,6 +24,9 @@ const router = {
 
       // Get Actions
       await server.register([action])
+
+      // Get Available Area
+      await server.register([availableArea])
 
       // Land - Parcels, Cover
       await server.register([land])

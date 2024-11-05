@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom'
-import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/action-land-use-compatibility-matrix.js'
+import { actionLandUseCompatibilityMatrix } from '~/src/api/available-area/helpers/action-land-use-compatibility-matrix.js'
 import { findAllActions } from '../helpers/find-all-actions.js'
 
 let actions
