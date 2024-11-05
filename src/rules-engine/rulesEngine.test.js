@@ -12,7 +12,7 @@ const createApplication = () => {
       existingAgreements: [{ area: 100, code: 'LIG2' }],
       intersections: {
         sssi: 0,
-        monuments: 0,
+        monument: 0,
         moorland: 0,
         lfa: 0,
         landParcel: 100

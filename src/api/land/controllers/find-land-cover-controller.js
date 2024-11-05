@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { findLandCover } from '../helpers/find-land-cover.js'
+import { findLandCover } from '~/src/services/arcgis.js'
 
 /**
  *

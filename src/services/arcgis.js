@@ -2,24 +2,24 @@ import { config } from '~/src/config/index.js'
 import { initCache } from '~/src/helpers/cache.js'
 
 /**
- * @type {Record<LayerId, string>}
+ * @type {Record<string, string>}
  */
 const baseUrls = {
   landParcel:
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/LMS_reference_parcels/FeatureServer',
-  sssi: 'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer',
-  monuments: '',
-  moorland: '',
-  lfa: ''
+  intersects:
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer',
+  landCover:
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer'
 }
 
 /**
  * @param {import("@hapi/hapi").Server<any>} server
- * @param {{ layerId: LayerId; landParcelId?: string; outFields?: "*"; resultCount?: number; }} options
+ * @param {{ resourceName: keyof baseUrls; landParcelId?: string; outFields?: "*"; resultCount?: number; }} options
  */
 async function constructArcGisUrl(server, options) {
-  const { layerId, landParcelId, outFields = '*', resultCount } = options
-  const layer = baseUrls[layerId]
+  const { resourceName, landParcelId, outFields = '*', resultCount } = options
+  const layer = baseUrls[resourceName]
 
   if (!layer) {
     throw new Error('Invalid layer id')
@@ -44,12 +44,42 @@ async function constructArcGisUrl(server, options) {
 }
 
 /**
- * @param {import("@hapi/hapi").Server<any>} server
- * @param {string} landParcelId
- * @param {LayerId} layerId
+ * Finds and returns a single land parcel from ArcGIS.
+ * @param { import('@hapi/hapi').Server } server
+ * @param { string } landParcelId
+ * @returns {Promise<{}|null>}
  */
-export async function getIntersect(server, landParcelId, layerId) {
-  const url = await constructArcGisUrl(server, { layerId, landParcelId })
+export async function findLandParcel(server, landParcelId) {
+  const url = await constructArcGisUrl(server, {
+    resourceName: 'landParcel',
+    landParcelId
+  })
+
+  const response = await fetch(url)
+  return await response.json()
+}
+
+/**
+ * Finds and returns a single land parcel from ArcGIS.
+ * @param { import('@hapi/hapi').Server } server
+ * @param { string } landParcelId
+ * @returns {Promise<{}|null>}
+ */
+export async function findLandCover(server, landParcelId) {
+  const url = await constructArcGisUrl(server, {
+    resourceName: 'landCover',
+    landParcelId
+  })
+
+  const response = await fetch(url)
+  return await response.json()
+}
+
+export async function getIntersect(server, landParcelId) {
+  const url = await constructArcGisUrl(server, {
+    resourceName: 'intersects',
+    landParcelId
+  })
   const response = await fetch(url)
   return await response.json()
 }

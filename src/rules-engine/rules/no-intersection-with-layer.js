@@ -7,7 +7,10 @@ export function noIntersectionWithLayer(application, ruleConfig) {
   const { intersections } = application.landParcel
   const { layerId, tolerancePercentage } = ruleConfig
 
-  if (intersections[layerId] > tolerancePercentage) {
+  if (
+    intersections[layerId] != null &&
+    intersections[layerId] > tolerancePercentage
+  ) {
     return { passed: false }
   }
 

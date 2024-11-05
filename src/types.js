@@ -1,9 +1,9 @@
 /**
- * @typedef {'landParcel' | 'sssi' | 'monuments' | 'moorland' | 'lfa' } LayerId
+ * @typedef {'landParcel' | 'landCover' | 'sssi' | 'monument' | 'moorland' | 'lfa' } LayerId
  */
 
 /**
- * @typedef {Record<LayerId, number>} Intersections
+ * @typedef {Partial<Record<LayerId, number>>} Intersections
  */
 
 /**
@@ -11,10 +11,9 @@
  */
 export const blankIntersections = {
   sssi: 0,
-  monuments: 0,
+  monument: 0,
   moorland: 0,
-  lfa: 0,
-  landParcel: 0
+  lfa: 0
 }
 
 /**
