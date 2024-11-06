@@ -63,6 +63,11 @@ describe('Get Actions controller', () => {
         code: 'CSAM2',
         description: 'Multi-species winter cover crop',
         payment: { amountPerHectare: 129 }
+      },
+      {
+        code: 'CSAM3',
+        description: 'Herbal leys',
+        payment: { amountPerHectare: 382 }
       }
     ])
   })

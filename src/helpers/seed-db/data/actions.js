@@ -97,5 +97,13 @@ export const actions = [
       amountPerHectare: 129
     },
     eligibilityRules: [{ id: 'is-below-moorland-line' }]
+  },
+  {
+    code: 'CSAM3',
+    description: 'Herbal leys',
+    payment: {
+      amountPerHectare: 382
+    },
+    eligibilityRules: [{ id: 'is-below-moorland-line' }]
   }
 ]
