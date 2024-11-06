@@ -1,20 +1,20 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { findLandCover } from '~/src/services/arcgis.js'
+import { findLandParcelIntersects } from '~/src/services/arcgis.js'
 
 /**
  *
  * @satisfies {Partial<ServerRoute>}
  */
-const findLandCoverController = {
+const findLandParcelIntersectsController = {
   /**
    * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @param { import('@hapi/hapi').ResponseToolkit } h
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    const entity = await findLandCover(
+    const entity = await findLandParcelIntersects(
       request.server,
       request.params.landParcelId,
       request.query.sheetId
@@ -27,7 +27,7 @@ const findLandCoverController = {
   }
 }
 
-export { findLandCoverController }
+export { findLandParcelIntersectsController }
 
 /**
  * @import { ServerRoute} from '@hapi/hapi'

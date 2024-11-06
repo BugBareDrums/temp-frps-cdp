@@ -15,10 +15,16 @@ const baseUrls = {
 
 /**
  * @param {import("@hapi/hapi").Server<any>} server
- * @param {{ resourceName: keyof baseUrls; landParcelId?: string; outFields?: "*"; resultCount?: number; }} options
+ * @param {{ resourceName: keyof baseUrls; landParcelId?: string; sheetId?: string, outFields?: "*"; resultCount?: number; }} options
  */
-async function constructArcGisUrl(server, options) {
-  const { resourceName, landParcelId, outFields = '*', resultCount } = options
+async function fetchFromArcGis(server, options) {
+  const {
+    resourceName,
+    landParcelId,
+    sheetId,
+    outFields = '*',
+    resultCount
+  } = options
   const layer = baseUrls[resourceName]
 
   if (!layer) {
@@ -27,8 +33,8 @@ async function constructArcGisUrl(server, options) {
 
   const url = new URL(`${layer}/0/query`)
 
-  const accessToken = await getCachedToken(server)
-  url.searchParams.set('token', accessToken)
+  const tokenResponse = await getCachedToken(server)
+  url.searchParams.set('token', tokenResponse.access_token)
   url.searchParams.set('f', 'geojson')
   url.searchParams.set('outFields', outFields)
 
@@ -36,52 +42,60 @@ async function constructArcGisUrl(server, options) {
     url.searchParams.set('resultRecordCount', `${resultCount}`)
   }
 
-  if (landParcelId) {
-    url.searchParams.set('where', `PARCEL_ID='${landParcelId}'`)
+  if (landParcelId && sheetId) {
+    url.searchParams.set(
+      'where',
+      `parcel_id='${landParcelId}' AND sheet_id='${sheetId}'`
+    )
   }
 
-  return url
+  const response = await fetch(url)
+  return await response.json()
 }
 
 /**
  * Finds and returns a single land parcel from ArcGIS.
  * @param { import('@hapi/hapi').Server } server
  * @param { string } landParcelId
+ * @param { string } sheetId
  * @returns {Promise<{}|null>}
  */
-export async function findLandParcel(server, landParcelId) {
-  const url = await constructArcGisUrl(server, {
+export async function findLandParcel(server, landParcelId, sheetId) {
+  return await fetchFromArcGis(server, {
     resourceName: 'landParcel',
-    landParcelId
+    landParcelId,
+    sheetId
   })
-
-  const response = await fetch(url)
-  return await response.json()
 }
 
 /**
  * Finds and returns a single land parcel from ArcGIS.
  * @param { import('@hapi/hapi').Server } server
  * @param { string } landParcelId
+ * @param { string } sheetId
  * @returns {Promise<{}|null>}
  */
-export async function findLandCover(server, landParcelId) {
-  const url = await constructArcGisUrl(server, {
+export async function findLandCover(server, landParcelId, sheetId) {
+  return await fetchFromArcGis(server, {
     resourceName: 'landCover',
-    landParcelId
+    landParcelId,
+    sheetId
   })
-
-  const response = await fetch(url)
-  return await response.json()
 }
 
-export async function getIntersect(server, landParcelId) {
-  const url = await constructArcGisUrl(server, {
+/**
+ * Finds relevant intersections for a given land parcel.
+ * @param { import('@hapi/hapi').Server } server
+ * @param { string } landParcelId
+ * @param { string } sheetId
+ * @returns {Promise<{}|null>}
+ */
+export async function findLandParcelIntersects(server, landParcelId, sheetId) {
+  return await fetchFromArcGis(server, {
     resourceName: 'intersects',
-    landParcelId
+    landParcelId,
+    sheetId
   })
-  const response = await fetch(url)
-  return await response.json()
 }
 
 const getUserToken = async () => {
@@ -101,11 +115,15 @@ const getUserToken = async () => {
   }
 }
 
+/**
+ * @type {import('@hapi/catbox').Policy<any, any>}
+ */
 let cache
 
 /**
- *  ArcGIS token cache
+ * ArcGIS token cache
  * @param { import('@hapi/hapi').Server } server
+ * @returns {Promise<{ id: string; access_token: string }>}
  */
 export function getCachedToken(server) {
   if (!cache) {
@@ -120,7 +138,8 @@ export function getCachedToken(server) {
       }
     )
   }
-  return cache(server).get('arcgis_token')
+
+  return cache.get('arcgis_token')
 }
 
 /** @import { LandParcel, Application, LayerId } from '../types.js' */

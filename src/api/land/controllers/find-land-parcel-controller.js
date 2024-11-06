@@ -16,7 +16,8 @@ const findLandParcelController = {
   handler: async (request, h) => {
     const entity = await findLandParcel(
       request.server,
-      request.params.landParcelId
+      request.params.landParcelId,
+      request.query.sheetId
     )
     if (isNull(entity)) {
       return Boom.notFound()
