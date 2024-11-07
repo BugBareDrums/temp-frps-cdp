@@ -3,10 +3,8 @@ import { paymentCalculation } from '../index.js'
 import { actions as mockActions } from '~/src/helpers/seed-db/data/actions.js'
 
 jest.mock('../../action/helpers/find-action.js', () => ({
-  findAction: jest.fn((db, action) =>
-    Promise.resolve(
-      mockActions.find((item) => item.code === action['action-code'])
-    )
+  findAction: jest.fn((db, actionCode) =>
+    Promise.resolve(mockActions.find((item) => item.code === actionCode))
   )
 }))
 

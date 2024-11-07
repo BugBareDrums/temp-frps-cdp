@@ -57,7 +57,7 @@ const paymentCalculationController = {
       }
 
       const actionPromises = await Promise.all(
-        actions.map((action) => findAction(db, action))
+        actionCodes.map((actionCode) => findAction(db, actionCode))
       )
 
       const payments = actions.map((actionRequest, index) => {
