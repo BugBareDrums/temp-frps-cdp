@@ -4,7 +4,8 @@ import { importData } from '~/src/api/import-data/index.js'
 import { actionCompatibilityMatrix } from '~/src/api/action-compatibility-matrix/index.js'
 import { action } from '~/src/api/action/index.js'
 import { land } from '~/src/api/land/index.js'
-import { availableArea } from './available-area/index.js'
+import { availableArea } from '~/src/api/available-area/index.js'
+import { paymentCalculation } from '~/src/api/payment/index.js'
 
 /**
  * @satisfies { import('@hapi/hapi').ServerRegisterPluginObject<*> }
@@ -30,6 +31,9 @@ const router = {
 
       // Land - Parcels, Cover
       await server.register([land])
+
+      // Payment Calculation
+      await server.register([paymentCalculation])
 
       // Application specific routes, add your own routes here.
       await server.register([example])
