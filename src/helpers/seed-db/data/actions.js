@@ -105,5 +105,13 @@ export const actions = [
       amountPerHectare: 382
     },
     eligibilityRules: [{ id: 'is-below-moorland-line' }]
+  },
+  {
+    code: 'CLIG3',
+    description: 'Manage grassland with very low nutrient inputs',
+    payment: {
+      amountPerHectare: 151
+    },
+    eligibilityRules: [{ id: 'is-below-moorland-line' }]
   }
 ]

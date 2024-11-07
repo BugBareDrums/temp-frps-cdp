@@ -27,8 +27,6 @@ describe('Get Actions controller', () => {
     expect(response.statusCode).toBe(400)
   })
 
-  // TODO tests with preexisting actions for GET and POST
-
   test('GET /actions route should return 200 when parcel-id query parameter is provided', async () => {
     const request = {
       method: 'GET',
@@ -54,6 +52,13 @@ describe('Get Actions controller', () => {
         payment: { amountPerHectare: 573 }
       },
       {
+        code: 'GRH7',
+        description: 'Haymaking supplement',
+        payment: {
+          amountPerHectare: 157
+        }
+      },
+      {
         code: 'CSAM1',
         description:
           'Assess soil, produce a soil management plan and test soil organic matter',
@@ -68,6 +73,13 @@ describe('Get Actions controller', () => {
         code: 'CSAM3',
         description: 'Herbal leys',
         payment: { amountPerHectare: 382 }
+      },
+      {
+        code: 'CLIG3',
+        description: 'Manage grassland with very low nutrient inputs',
+        payment: {
+          amountPerHectare: 151
+        }
       }
     ])
   })
