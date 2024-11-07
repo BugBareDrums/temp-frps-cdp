@@ -4,6 +4,18 @@ import { findAction } from '../helpers/find-action.js'
 import { actionCombinationLandUseCompatibilityMatrix } from '~/src/api/available-area/helpers/action-land-use-compatibility-matrix.js'
 import { executeRules } from '~/src/rules-engine/rulesEngine.js'
 
+const isValidArea = (userSelectedActions, landParcel) => {
+  const area = parseFloat(landParcel.area)
+  for (const action of userSelectedActions) {
+    const areaAppliedFor = parseFloat(action.quantity)
+    if (areaAppliedFor > area) {
+      return [
+        `Area applied for (${areaAppliedFor}ha) is greater than parcel area (${area}ha)`
+      ]
+    }
+  }
+}
+
 const isValidCombination = (
   preexistingActions = [],
   userSelectedActions,
@@ -100,6 +112,7 @@ const actionValidationController = {
    */
   handler: async ({ db, payload: { actions, landParcel } }, h) => {
     const errors = {
+      ...isValidArea(actions, landParcel),
       ...isValidCombination(
         landParcel.agreements,
         actions,
