@@ -1,12 +1,22 @@
 import { executeRules } from './rulesEngine.js'
 
+/**
+ * @returns {Application}
+ */
 const createApplication = () => {
   return {
     areaAppliedFor: 100,
     actionCodeAppliedFor: 'GRH7',
     landParcel: {
       area: 100,
-      existingAgreements: [{ area: 100, code: 'LIG2' }]
+      existingAgreements: [{ area: 100, code: 'LIG2' }],
+      intersections: {
+        sssi: 0,
+        monument: 0,
+        moorland: 0,
+        lfa: 0,
+        landParcel: 100
+      }
     }
   }
 }
@@ -52,3 +62,5 @@ describe('Rules Engine', function () {
     })
   })
 })
+
+/** @import { LandParcel, Application, LayerId } from '../types.js' */

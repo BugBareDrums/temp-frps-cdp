@@ -2,6 +2,7 @@ import { hasMinimumParcelArea } from './has-min-parcel-area.js'
 import { isBelowMoorlandLine } from './is-below-moorland-line.js'
 import { isForWholeParcelArea } from './is-for-whole-parcel-area.js'
 import { isLessThanMaximumParcelArea } from './is-less-than-max-parcel-area.js'
+import { noIntersectionWithLayer } from './no-intersection-with-layer.js'
 import { supplementAreaMatchesParent } from './supplement-area-matches-parent.js'
 import {
   hasPeatySoil,
@@ -19,5 +20,6 @@ export const rules = {
   'is-outside-sda': isOutsideSda,
   'has-peaty-soil': hasPeatySoil,
   'no-sssi': noSSI,
-  'no-hefer-features': noHeferFeatures
+  'no-hefer-features': noHeferFeatures,
+  'no-intersection-with-layer': noIntersectionWithLayer
 }

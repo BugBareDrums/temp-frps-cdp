@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
 
-import { findLandParcel } from '../helpers/find-land-parcel.js'
+import { findLandParcel } from '~/src/services/arcgis.js'
 
 /**
  *
@@ -16,7 +16,8 @@ const findLandParcelController = {
   handler: async (request, h) => {
     const entity = await findLandParcel(
       request.server,
-      request.params.landParcelId
+      request.params.landParcelId,
+      request.query.sheetId
     )
     if (isNull(entity)) {
       return Boom.notFound()
