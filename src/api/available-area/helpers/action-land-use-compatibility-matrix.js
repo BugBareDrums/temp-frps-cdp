@@ -25,7 +25,11 @@ const ACTION_COMBO_LAND_USE_COMPATIBILITY_MATRIX = {
     ['CSAM2', 'AB3'],
     ['CSAM2', 'SAM1', 'CSAM1'],
     ['CSAM2', 'SAM1', 'AB3'],
-    ['CSAM2', 'CSAM1', 'AB3']
+    ['CSAM2', 'CSAM1', 'AB3'],
+    ['CLIG3'],
+    ['CLIG3', 'SAM1'],
+    ['CLIG3', 'CSAM1'],
+    ['CLIG3', 'GRH7']
   ],
   PG01: [
     ['CSAM3'],
@@ -41,7 +45,11 @@ const ACTION_COMBO_LAND_USE_COMPATIBILITY_MATRIX = {
     ['CSAM1', 'SAM3'],
     ['CSAM1', 'LIG1'],
     ['CSAM1', 'GRH1'],
-    ['CSAM1']
+    ['CSAM1'],
+    ['CLIG3'],
+    ['CLIG3', 'SAM1'],
+    ['CLIG3', 'CSAM1'],
+    ['CLIG3', 'GRH7']
   ],
   TG01: [
     ['AB3'],
@@ -79,7 +87,11 @@ const ACTION_COMBO_LAND_USE_COMPATIBILITY_MATRIX = {
     ['SAM2', 'SAM1'],
     ['SAM3'],
     ['SAM3', 'CSAM1'],
-    ['SAM3', 'SAM1']
+    ['SAM3', 'SAM1'],
+    ['CLIG3'],
+    ['CLIG3', 'SAM1'],
+    ['CLIG3', 'CSAM1'],
+    ['CLIG3', 'GRH7']
   ]
 }
 
