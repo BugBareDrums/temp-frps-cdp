@@ -43,10 +43,18 @@ async function fetchFromArcGis(server, options) {
   }
 
   if (landParcelId && sheetId) {
-    url.searchParams.set(
-      'where',
-      `parcel_id='${landParcelId}' AND sheet_id='${sheetId}'`
-    )
+    if (landParcelId.includes(',') && sheetId.includes(',')) {
+      // TODO - Try to find multiple IDs in one request
+      url.searchParams.set(
+        'where',
+        `sheet_id IN ("${sheetId.replace(/,/g, '","')}")`
+      )
+    } else {
+      url.searchParams.set(
+        'where',
+        `parcel_id='${landParcelId}' AND sheet_id='${sheetId}'`
+      )
+    }
   }
 
   const response = await fetch(url)
@@ -54,11 +62,16 @@ async function fetchFromArcGis(server, options) {
 }
 
 /**
+ * @typedef ArcGISLandResponse
+ * @property {Array} features
+ */
+
+/**
  * Finds and returns a single land parcel from ArcGIS.
  * @param { import('@hapi/hapi').Server } server
  * @param { string } landParcelId
  * @param { string } sheetId
- * @returns {Promise<{}|null>}
+ * @returns {Promise<ArcGISLandResponse|null>}
  */
 export async function findLandParcel(server, landParcelId, sheetId) {
   return await fetchFromArcGis(server, {
@@ -73,7 +86,7 @@ export async function findLandParcel(server, landParcelId, sheetId) {
  * @param { import('@hapi/hapi').Server } server
  * @param { string } landParcelId
  * @param { string } sheetId
- * @returns {Promise<{}|null>}
+ * @returns {Promise<ArcGISLandResponse|null>}
  */
 export async function findLandCover(server, landParcelId, sheetId) {
   return await fetchFromArcGis(server, {
