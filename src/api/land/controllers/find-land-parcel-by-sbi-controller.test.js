@@ -1,7 +1,6 @@
 import Hapi from '@hapi/hapi'
 import { land } from '../index.js'
 import { farmers as mockFarmers } from '~/src/helpers/seed-db/data/farmers.js'
-import { codes as mockCodes } from '~/src/helpers/seed-db/data/codes.js'
 import CatboxMemory from '@hapi/catbox-memory'
 
 jest.mock('../../../services/arcgis')
@@ -31,9 +30,41 @@ jest.mock('../helpers/find-land-parcel-by-sbi.js', () => ({
 }))
 
 jest.mock('../helpers/find-land-cover-code.js', () => ({
-  findLandCoverCode: jest.fn(() =>
-    Promise.resolve(mockCodes[0].classes[1].covers[0])
-  )
+  findLandCoverCode: jest.fn((db, code) => {
+    const responses = {
+      131: {
+        name: 'Permanent grassland',
+        code: '131',
+        uses: [
+          {
+            name: 'Permanent grassland',
+            code: 'PG01'
+          }
+        ]
+      },
+      118: {
+        name: 'Other arable crops',
+        code: '118',
+        uses: [
+          {
+            name: 'Barley - spring',
+            code: 'AC01'
+          }
+        ]
+      },
+      583: {
+        name: 'Rivers and Streams type 3',
+        code: '583',
+        uses: [
+          {
+            name: 'Rivers and Streams type 3',
+            code: 'IW03'
+          }
+        ]
+      }
+    }
+    return Promise.resolve(responses[code])
+  })
 }))
 
 describe('Land Parcel by SBI controller', () => {
@@ -99,35 +130,34 @@ describe('Land Parcel by SBI controller', () => {
         const { statusCode, result } = await server.inject(request)
 
         expect(statusCode).toBe(200)
-        expect(result).toStrictEqual([
-          {
-            agreements: [],
-            area: '0.1939',
-            attributes: {
-              moorlandLineStatus: 'below'
-            },
-            centroidX: 402471.849106535,
-            centroidY: 341698.241947721,
-            createdBy: 'CAPMIG',
-            createdOn: 1426500556000,
-            id: 1732,
-            landCovers: { code: '131', name: 'Permanent grassland' },
-            landUseList: [{ code: 'PG01', name: 'Permanent grassland' }],
-            lastRefreshDate: 1709718104000,
-            osSheetId: 'SK0241',
-            parcelId: '4769',
-            sbi: 908789876,
-            shapeArea: 5341.636962890625,
-            shapeLength: 311.55161847415724,
-            validFrom: 1262304001000,
-            validTo: 253402214400000,
-            validated: 'N',
-            verificationType: 2000,
-            verifiedOn: 1622851200000,
-            wktFormatGeometry:
-              'POLYGON ((402472.23995 341737.42985,402442.79995 341703.05995,402445.66005 341700.12995,402451.87005 341693.52985,402458.92995 341685.93985,402471.28005 341673.22995,402481.66005 341662.56985,402497.29995 341678.93985,402490.98005 341694.15985,402482.48005 341713.98995,402472.23995 341737.42985))'
-          }
-        ])
+        expect(result).toHaveLength(3)
+        expect(result[0]).toStrictEqual({
+          id: '4769',
+          sbi: 908789876,
+          sheetId: 'SK0241',
+          agreements: [],
+          attributes: {
+            moorlandLineStatus: 'below'
+          },
+          centroidX: 402471.849106535,
+          centroidY: 341698.241947721,
+          validated: 'N',
+          wktFormatGeometry:
+            'POLYGON ((402472.23995 341737.42985,402442.79995 341703.05995,402445.66005 341700.12995,402451.87005 341693.52985,402458.92995 341685.93985,402471.28005 341673.22995,402481.66005 341662.56985,402497.29995 341678.93985,402490.98005 341694.15985,402482.48005 341713.98995,402472.23995 341737.42985))',
+          features: [
+            {
+              area: '0.1939',
+              landCovers: { code: '131', name: 'Permanent grassland' },
+              landUseList: [{ code: 'PG01', name: 'Permanent grassland' }],
+              lastRefreshDate: 1709719441000,
+              shapeArea: 5341.63818359375,
+              shapeLength: 311.5516163661165,
+              validFrom: 1262304001000,
+              validTo: 253402214400000,
+              verifiedOn: 1622851200000
+            }
+          ]
+        })
       })
     })
   })

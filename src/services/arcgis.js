@@ -47,7 +47,7 @@ async function fetchFromArcGis(server, options) {
       // TODO - Try to find multiple IDs in one request
       url.searchParams.set(
         'where',
-        `sheet_id IN ("${sheetId.replace(/,/g, '","')}")`
+        `parcel_id IN ('${landParcelId.replace(/,/g, "','")}') AND sheet_id IN ('${sheetId.replace(/,/g, "','")}')`
       )
     } else {
       url.searchParams.set(
