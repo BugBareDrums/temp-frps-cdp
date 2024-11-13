@@ -47,8 +47,8 @@ jest.mock('../helpers/find-land-cover-code.js', () => ({
         code: '118',
         uses: [
           {
-            name: 'Barley - spring',
-            code: 'AC01'
+            name: 'Wheat - spring',
+            code: 'AC32'
           }
         ]
       },
@@ -132,29 +132,54 @@ describe('Land Parcel by SBI controller', () => {
         expect(statusCode).toBe(200)
         expect(result).toHaveLength(3)
         expect(result[0]).toStrictEqual({
-          id: '4769',
+          id: '6065',
           sbi: 908789876,
-          sheetId: 'SK0241',
+          sheetId: 'TR3354',
           agreements: [],
           attributes: {
             moorlandLineStatus: 'below'
           },
-          centroidX: 402471.849106535,
-          centroidY: 341698.241947721,
+          centroidX: 633588.383705711,
+          centroidY: 154641.049534814,
           validated: 'N',
-          wktFormatGeometry:
-            'POLYGON ((402472.23995 341737.42985,402442.79995 341703.05995,402445.66005 341700.12995,402451.87005 341693.52985,402458.92995 341685.93985,402471.28005 341673.22995,402481.66005 341662.56985,402497.29995 341678.93985,402490.98005 341694.15985,402482.48005 341713.98995,402472.23995 341737.42985))',
           features: [
             {
-              area: '0.1939',
-              landCovers: { code: '131', name: 'Permanent grassland' },
-              landUseList: [{ code: 'PG01', name: 'Permanent grassland' }],
-              lastRefreshDate: 1709719441000,
-              shapeArea: 5341.63818359375,
-              shapeLength: 311.5516163661165,
-              validFrom: 1262304001000,
+              area: '2.6556',
+              landCovers: {
+                name: 'Permanent grassland',
+                code: '131'
+              },
+              landUseList: [
+                {
+                  name: 'Permanent grassland',
+                  code: 'PG01'
+                }
+              ],
+              validFrom: 1356998401000,
               validTo: 253402214400000,
-              verifiedOn: 1622851200000
+              verifiedOn: 1500940800000,
+              lastRefreshDate: 1709719063000,
+              shapeArea: 67625.3125,
+              shapeLength: 1648.4627784300944
+            },
+            {
+              area: '0.2516',
+              landCovers: {
+                name: 'Rivers and Streams type 3',
+                code: '583'
+              },
+              landUseList: [
+                {
+                  name: 'Rivers and Streams type 3',
+                  code: 'IW03'
+                }
+              ],
+              validFrom: 1356998401000,
+              validTo: 253402214400000,
+              verifiedOn: 1541116800000,
+              lastRefreshDate: 1709719063000,
+              shapeArea: 6406.0615234375,
+              shapeLength: 338.7092416855114
             }
           ]
         })

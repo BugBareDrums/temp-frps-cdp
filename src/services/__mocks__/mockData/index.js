@@ -1,11 +1,15 @@
-import { mockSarahSingleLandParcelData } from './mock-land-parcel-data.js'
 import {
-  mockSarahSingleLandCoverData,
-  mockSarahMultiLandCoverData
+  mockSarahSingleLandParcelResponses,
+  mockSarahMultiLandParcelResponse
+} from './mock-land-parcel-data.js'
+import {
+  mockSarahSingleLandCoverResponses,
+  mockSarahMultiLandCoverResponse
 } from './mock-land-cover-data.js'
 
 export {
-  mockSarahSingleLandParcelData,
-  mockSarahSingleLandCoverData,
-  mockSarahMultiLandCoverData
+  mockSarahMultiLandParcelResponse,
+  mockSarahMultiLandCoverResponse,
+  mockSarahSingleLandParcelResponses,
+  mockSarahSingleLandCoverResponses
 }

@@ -24,7 +24,6 @@ const transformParcelData = (sbi, parcels) =>
     centroidX: parcel.CENTROID_X,
     centroidY: parcel.CENTROID_Y,
     validated: parcel.VALIDATED,
-    wktFormatGeometry: parcel.F_geometrywkt,
     features: parcel.features.map((feature) => ({
       area: (feature.GEOM_AREA_SQM / 10000).toFixed(4), // Convert to hectares
       validFrom: feature.VALID_FROM,
@@ -41,13 +40,15 @@ const transformParcelData = (sbi, parcels) =>
     }))
   }))
 
-const getLandParcels = async (server, userParcels) =>
-  await Promise.all(
-    userParcels.map(async (parcel) => ({
-      ...parcel,
-      ...(await findLandParcel(server, parcel.id, parcel.sheetId))
-    }))
+const getLandParcels = async (server, userParcels) => {
+  const parcelIds = userParcels.map((parcel) => parcel.id)
+  const parcelSheetIds = userParcels.map((parcel) => parcel.sheetId)
+  return await findLandParcel(
+    server,
+    parcelIds.toString(),
+    parcelSheetIds.toString()
   )
+}
 
 const getLandCovers = async (server, userParcels) => {
   const parcelIds = userParcels.map((parcel) => parcel.id)
@@ -114,21 +115,27 @@ const findLandParcelBySbiController = {
       landCovers
     )
 
-    const landParcelWithFeatures = landParcels.map((parcel) => ({
-      ...parcel.features[0].properties,
-      agreements: parcel.agreements,
-      attributes: parcel.attributes,
-      features: landCoversWithDetails
-        .filter(
-          (cover) =>
-            cover.properties.PARCEL_ID === parcel.id &&
-            cover.properties.SHEET_ID === parcel.sheetId
-        )
-        .map((cover) => cover.properties)
-    }))
+    const landParcelsWithCovers = landParcels.features.map((parcel) => {
+      const { agreements, attributes } = userParcels.find(
+        (userParcel) => userParcel.id === parcel.properties.PARCEL_ID
+      )
+
+      return {
+        ...parcel.properties,
+        agreements,
+        attributes,
+        features: landCoversWithDetails
+          .filter(
+            (cover) =>
+              cover.properties.PARCEL_ID === parcel.properties.PARCEL_ID &&
+              cover.properties.SHEET_ID === parcel.properties.SHEET_ID
+          )
+          .map((cover) => cover.properties)
+      }
+    })
 
     return h
-      .response(transformParcelData(request.params.sbi, landParcelWithFeatures))
+      .response(transformParcelData(request.params.sbi, landParcelsWithCovers))
       .code(200)
   }
 }

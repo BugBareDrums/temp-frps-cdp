@@ -1,25 +1,31 @@
 import {
-  mockSarahSingleLandParcelData,
-  mockSarahSingleLandCoverData,
-  mockSarahMultiLandCoverData
+  mockSarahSingleLandCoverResponses,
+  mockSarahSingleLandParcelResponses,
+  mockSarahMultiLandCoverResponse,
+  mockSarahMultiLandParcelResponse
 } from './mockData/index.js'
 
-export const findLandParcel = async (server, landParcelId, sheetId) =>
-  Promise.resolve(
-    mockSarahSingleLandParcelData.find(
+export const findLandParcel = async (server, landParcelId, sheetId) => {
+  if (landParcelId.includes(',')) {
+    return mockSarahMultiLandParcelResponse
+  }
+
+  return Promise.resolve(
+    mockSarahSingleLandParcelResponses.find(
       (item) =>
         item.features[0].properties.PARCEL_ID === landParcelId &&
         item.features[0].properties.SHEET_ID === sheetId
     )
   )
+}
 
 export const findLandCover = async (server, landParcelId, sheetId) => {
   if (landParcelId.includes(',')) {
-    return mockSarahMultiLandCoverData
+    return mockSarahMultiLandCoverResponse
   }
 
   return Promise.resolve(
-    mockSarahSingleLandCoverData.find(
+    mockSarahSingleLandCoverResponses.find(
       (item) =>
         item.features[0].properties.PARCEL_ID === landParcelId &&
         item.features[0].properties.SHEET_ID === sheetId
