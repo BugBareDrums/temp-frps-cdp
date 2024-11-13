@@ -96,6 +96,7 @@ const findLandParcelBySbiController = {
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
+    /** @type { any } - Need to fix this */
     const userParcels = await findLandParcelsBySbi(
       request,
       request.params.sbi.toString()
@@ -143,6 +144,7 @@ const findLandParcelBySbiController = {
 export { findLandParcelBySbiController }
 
 /**
+ * @import { CompanyParcel } from '~/src/api/land/helpers/find-land-parcel-by-sbi.js'
  * @import { ServerRoute} from '@hapi/hapi'
  * @import { MongoDBPlugin } from '~/src/helpers/mongodb.js'
  */
