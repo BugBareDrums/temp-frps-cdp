@@ -112,6 +112,12 @@ export const actions = [
     payment: {
       amountPerHectare: 151
     },
-    eligibilityRules: [{ id: 'is-below-moorland-line' }]
+    eligibilityRules: [
+      { id: 'is-below-moorland-line' },
+      {
+        id: 'total-area-with-exception',
+        config: { incompatibleAction: 'CIGL1' }
+      }
+    ]
   }
 ]

@@ -4,6 +4,7 @@ import { isForWholeParcelArea } from './is-for-whole-parcel-area.js'
 import { isLessThanMaximumParcelArea } from './is-less-than-max-parcel-area.js'
 import { noIntersectionWithLayer } from './no-intersection-with-layer.js'
 import { supplementAreaMatchesParent } from './supplement-area-matches-parent.js'
+import { totalAreaWithException } from './total-area-with-exception.js'
 import {
   hasPeatySoil,
   isOutsideSda,
@@ -21,5 +22,6 @@ export const rules = {
   'has-peaty-soil': hasPeatySoil,
   'no-sssi': noSSI,
   'no-hefer-features': noHeferFeatures,
-  'no-intersection-with-layer': noIntersectionWithLayer
+  'no-intersection-with-layer': noIntersectionWithLayer,
+  'total-area-with-exception': totalAreaWithException
 }
