@@ -21,6 +21,7 @@ const transformParcelData = (sbi, parcels) =>
     sbi,
     agreements: parcel.agreements,
     attributes: parcel.attributes,
+    area: (parcel.GEOM_AREA_SQM / 10000).toFixed(4),
     centroidX: parcel.CENTROID_X,
     centroidY: parcel.CENTROID_Y,
     validated: parcel.VALIDATED,
@@ -144,7 +145,6 @@ const findLandParcelBySbiController = {
 export { findLandParcelBySbiController }
 
 /**
- * @import { CompanyParcel } from '~/src/api/land/helpers/find-land-parcel-by-sbi.js'
  * @import { ServerRoute} from '@hapi/hapi'
  * @import { MongoDBPlugin } from '~/src/helpers/mongodb.js'
  */

@@ -6,7 +6,7 @@ import { initCache } from '~/src/helpers/cache.js'
  */
 const baseUrls = {
   landParcel:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/LMS_reference_parcels/FeatureServer/1',
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/lms_land_parcels/FeatureServer/1',
   intersects:
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer/0',
   landCover:

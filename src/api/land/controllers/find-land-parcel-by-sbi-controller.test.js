@@ -136,6 +136,7 @@ describe('Land Parcel by SBI controller', () => {
           sbi: 908789876,
           sheetId: 'TR3354',
           agreements: [],
+          area: '2.9072',
           attributes: {
             moorlandLineStatus: 'below'
           },
