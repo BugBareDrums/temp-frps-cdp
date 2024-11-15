@@ -9,11 +9,11 @@ describe('totalAreaWithException', function () {
   test('should return true if the area applied for matches the remaining area left by the incompatible action', function () {
     // Arrange
     const application = {
-      areaAppliedFor: 50,
+      areaAppliedFor: 40,
       actionCodeAppliedFor: 'CLIG3',
       landParcel: {
         area: 100,
-        existingAgreements: [{ area: 50, code: 'CIGL1' }]
+        existingAgreements: [{ area: 60, code: 'CIGL1' }]
       }
     }
 
