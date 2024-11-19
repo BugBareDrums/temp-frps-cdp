@@ -6,11 +6,11 @@ import { initCache } from '~/src/helpers/cache.js'
  */
 const baseUrls = {
   landParcel:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/LMS_reference_parcels/FeatureServer',
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/lms_land_parcels/FeatureServer/1',
   intersects:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer',
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer/0',
   landCover:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer'
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0'
 }
 
 /**
@@ -31,7 +31,7 @@ async function fetchFromArcGis(server, options) {
     throw new Error('Invalid layer id')
   }
 
-  const url = new URL(`${layer}/0/query`)
+  const url = new URL(`${layer}/query`)
 
   const tokenResponse = await getCachedToken(server)
   url.searchParams.set('token', tokenResponse.access_token)
@@ -43,11 +43,10 @@ async function fetchFromArcGis(server, options) {
   }
 
   if (landParcelId && sheetId) {
-    if (landParcelId.includes(',') && sheetId.includes(',')) {
-      // TODO - Try to find multiple IDs in one request
+    if (landParcelId.includes(',') || sheetId.includes(',')) {
       url.searchParams.set(
         'where',
-        `sheet_id IN ("${sheetId.replace(/,/g, '","')}")`
+        `parcel_id IN ('${landParcelId.replace(/,/g, "','")}') AND sheet_id IN ('${sheetId.replace(/,/g, "','")}')`
       )
     } else {
       url.searchParams.set(

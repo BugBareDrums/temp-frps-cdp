@@ -12,46 +12,67 @@ const logger = createLogger()
  * Transforms the parcel data from ArcGIS format to a simplified format.
  * @param {string} sbi - Single Business ID in string format.
  * @param {Array} parcels - Array of land parcels.
- * @param {object} classCodeInfo - the raw data from the class code endpoint.
- * @param {object} json - JSON data with `features` array inside `entity`.
  * @returns {Array} Transformed data for each parcel.
  */
-function transformParcelData(sbi, parcels, classCodeInfo, json) {
-  return json.entity.features.map((feature) => {
-    const properties = feature.properties
-    const { attributes, agreements } = parcels.find(
-      (parcel) => parcel.id === properties.PARCEL_ID
-    )
-
-    return {
-      id: properties.id,
-      sbi,
-      parcelId: properties.PARCEL_ID,
-      area: (properties.GEOM_AREA_SQM / 10000).toFixed(4), // Convert to hectares
-      osSheetId: properties.SHEET_ID,
-      validFrom: properties.VALID_FROM,
-      validTo: properties.VALID_TO,
-      verifiedOn: properties.VERIFIED_ON,
-      verificationType: properties.VERIFICATION_TYPE,
-      createdOn: properties.CREATED_ON,
-      createdBy: properties.CREATED_BY,
-      validated: properties.VALIDATED,
-      centroidX: properties.CENTROID_X,
-      centroidY: properties.CENTROID_Y,
-      lastRefreshDate: properties.LAST_REFRESH_DATE,
-      wktFormatGeometry: properties.F_geometrywkt,
-      shapeArea: properties.Shape__Area,
-      shapeLength: properties.Shape__Length,
+const transformParcelData = (sbi, parcels) =>
+  parcels.map((parcel) => ({
+    id: parcel.PARCEL_ID,
+    sheetId: parcel.SHEET_ID,
+    sbi,
+    agreements: parcel.agreements,
+    attributes: parcel.attributes,
+    area: (parcel.GEOM_AREA_SQM / 10000).toFixed(4),
+    centroidX: parcel.CENTROID_X,
+    centroidY: parcel.CENTROID_Y,
+    validated: parcel.VALIDATED,
+    features: parcel.features.map((feature) => ({
+      area: (feature.GEOM_AREA_SQM / 10000).toFixed(4), // Convert to hectares
+      validFrom: feature.VALID_FROM,
+      validTo: feature.VALID_TO,
+      verifiedOn: feature.VERIFIED_ON,
+      lastRefreshDate: feature.LAST_REFRESH_DATE,
+      shapeArea: feature.Shape__Area,
+      shapeLength: feature.Shape__Length,
+      landUseList: feature.landCodeDetails.uses,
       landCovers: {
-        code: classCodeInfo.code,
-        name: classCodeInfo.name
-      },
-      agreements,
-      landUseList: classCodeInfo.uses,
-      attributes
-    }
-  })
+        code: feature.landCodeDetails.code,
+        name: feature.landCodeDetails.name
+      }
+    }))
+  }))
+
+const getLandParcels = async (server, userParcels) => {
+  const parcelIds = userParcels.map((parcel) => parcel.id)
+  const parcelSheetIds = userParcels.map((parcel) => parcel.sheetId)
+  return await findLandParcel(
+    server,
+    parcelIds.toString(),
+    parcelSheetIds.toString()
+  )
 }
+
+const getLandCovers = async (server, userParcels) => {
+  const parcelIds = userParcels.map((parcel) => parcel.id)
+  const parcelSheetIds = userParcels.map((parcel) => parcel.sheetId)
+  return await findLandCover(
+    server,
+    parcelIds.toString(),
+    parcelSheetIds.toString()
+  )
+}
+
+const getLandCoverDetails = async (db, landCovers) =>
+  await Promise.all(
+    landCovers.features.map(async (feature) => ({
+      properties: {
+        landCodeDetails: await findLandCoverCode(
+          db,
+          feature.properties.LAND_COVER_CLASS_CODE
+        ),
+        ...feature.properties
+      }
+    }))
+  )
 
 /**
  *
@@ -76,43 +97,47 @@ const findLandParcelBySbiController = {
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    const parcels = await findLandParcelsBySbi(
+    /** @type { BusinessParcel[] } */
+    const userParcels = await findLandParcelsBySbi(
       request,
       request.params.sbi.toString()
     )
-    if (isNull(parcels)) {
+    if (isNull(userParcels)) {
       return Boom.notFound()
     }
 
-    const parcelIds = parcels.map((parcel) => parcel.id)
-    const parcelSheetIds = parcels.map((parcel) => parcel.sheetId)
+    const landParcels = await getLandParcels(request.server, userParcels)
+    if (!landParcels) return Boom.notFound('No parcel data found')
 
-    const landParcelData = await findLandParcel(
-      request.server,
-      parcelIds[0],
-      parcelSheetIds[0]
+    const landCovers = await getLandCovers(request.server, userParcels)
+    if (!landCovers) return Boom.notFound('No cover data found')
+
+    const landCoversWithDetails = await getLandCoverDetails(
+      request.db,
+      landCovers
     )
 
-    if (!landParcelData) return Boom.notFound('No matching parcels found')
+    const landParcelsWithCovers = landParcels.features.map((parcel) => {
+      const userParcel = userParcels.find(
+        (userParcel) => userParcel.id === parcel.properties.PARCEL_ID
+      )
 
-    const landParcelCoverData = await findLandCover(
-      request.server,
-      parcelIds[0],
-      parcelSheetIds[0]
-    )
-
-    if (!landParcelCoverData) return Boom.notFound('No parcel data found')
-
-    const classCode =
-      landParcelCoverData.features[0].properties.LAND_COVER_CLASS_CODE
-    const classCodeInfo = await findLandCoverCode(request.db, classCode)
+      return {
+        ...parcel.properties,
+        agreements: userParcel?.agreements,
+        attributes: userParcel?.attributes,
+        features: landCoversWithDetails
+          .filter(
+            (cover) =>
+              cover.properties.PARCEL_ID === parcel.properties.PARCEL_ID &&
+              cover.properties.SHEET_ID === parcel.properties.SHEET_ID
+          )
+          .map((cover) => cover.properties)
+      }
+    })
 
     return h
-      .response(
-        transformParcelData(request.params.sbi, parcels, classCodeInfo, {
-          entity: { features: landParcelData.features }
-        })
-      )
+      .response(transformParcelData(request.params.sbi, landParcelsWithCovers))
       .code(200)
   }
 }
@@ -122,4 +147,5 @@ export { findLandParcelBySbiController }
 /**
  * @import { ServerRoute} from '@hapi/hapi'
  * @import { MongoDBPlugin } from '~/src/helpers/mongodb.js'
+ * @import { BusinessParcel } from '~/src/api/land/helpers/find-land-parcel-by-sbi.js'
  */
