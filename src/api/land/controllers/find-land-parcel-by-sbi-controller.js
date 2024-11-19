@@ -97,7 +97,7 @@ const findLandParcelBySbiController = {
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    /** @type { any } - Need to fix this */
+    /** @type { BusinessParcel[] } */
     const userParcels = await findLandParcelsBySbi(
       request,
       request.params.sbi.toString()
@@ -118,14 +118,14 @@ const findLandParcelBySbiController = {
     )
 
     const landParcelsWithCovers = landParcels.features.map((parcel) => {
-      const { agreements, attributes } = userParcels.find(
+      const userParcel = userParcels.find(
         (userParcel) => userParcel.id === parcel.properties.PARCEL_ID
       )
 
       return {
         ...parcel.properties,
-        agreements,
-        attributes,
+        agreements: userParcel?.agreements,
+        attributes: userParcel?.attributes,
         features: landCoversWithDetails
           .filter(
             (cover) =>
@@ -147,4 +147,5 @@ export { findLandParcelBySbiController }
 /**
  * @import { ServerRoute} from '@hapi/hapi'
  * @import { MongoDBPlugin } from '~/src/helpers/mongodb.js'
+ * @import { BusinessParcel } from '~/src/api/land/helpers/find-land-parcel-by-sbi.js'
  */

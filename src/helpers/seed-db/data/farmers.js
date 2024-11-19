@@ -13,7 +13,7 @@ export const farmers = [
     address: 'Imaginary Farm Co, Suffolk, SF1 23ED',
     businessType: 'Farm',
     activity: 'Arable Farm',
-    companies: [
+    businesses: [
       {
         name: 'Imaginary Farm',
         id: 'imaginary-farm',
@@ -90,7 +90,7 @@ export const farmers = [
     address: 'Berry Farm, Norfolk, NO4 3RF',
     businessType: 'Farm',
     activity: 'Arable Farm',
-    companies: [
+    businesses: [
       {
         name: 'Berry Farm',
         id: 'berry-farm',
@@ -118,7 +118,7 @@ export const farmers = [
     address: 'Green Farm, Devon, DV6 4RH',
     businessType: 'Farm',
     activity: 'Arable Farm',
-    companies: [
+    businesses: [
       {
         name: 'Green Farm',
         id: 'green-farm',

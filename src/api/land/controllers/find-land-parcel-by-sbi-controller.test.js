@@ -8,17 +8,17 @@ jest.mock('../../../services/arcgis')
 jest.mock('../helpers/find-land-parcel-by-sbi.js', () => ({
   findLandParcelsBySbi: jest.fn((db, sbi) => {
     const results = mockFarmers.find((farmer) =>
-      farmer.companies.filter((company) => company.sbi === sbi)
+      farmer.businesses.filter((business) => business.sbi === sbi)
     )
 
-    if (!results) return Promise.reject(new Error('No matching companies'))
+    if (!results) return Promise.reject(new Error('No matching businesses'))
 
-    const company = [results][0].companies.filter(
-      (company) => company.sbi === sbi
+    const business = [results][0].businesses.filter(
+      (business) => business.sbi === sbi
     )
 
     // Get the parcels
-    const parcels = company[0].parcels.map((parcel) => ({
+    const parcels = business[0].parcels.map((parcel) => ({
       id: parcel.id,
       sheetId: parcel.sheetId,
       agreements: parcel.agreements,
