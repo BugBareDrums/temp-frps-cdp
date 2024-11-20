@@ -40,6 +40,6 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
 
 // TODO get LP polygon by Id/SheetId - see arcgis.js
 // TODO get polygons that intersect from Moorland server - see arcgis.js need new function there, needs a POST request there
-// TODO use above in intersect api to get intersection polygon - see arcgis.js
 
+// TODO use above in intersect api to get intersection polygon - see arcgis.js
 // TODO use areas and lengths from geometry server to calculate area of intersection polygon(s) - see arcgis.js need new function there
