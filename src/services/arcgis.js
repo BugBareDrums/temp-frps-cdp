@@ -10,7 +10,9 @@ const baseUrls = {
   intersects:
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Parcel_and_SSSI_intersects/FeatureServer/0',
   landCover:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0'
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0',
+  moorland:
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Moorland/FeatureServer/0'
 }
 
 /**
