@@ -62,6 +62,38 @@ async function fetchFromArcGis(server, options) {
   return await response.json()
 }
 
+export async function fetchMoorlandIntersection(server, geometry) {
+  const layer = baseUrls.moorland
+  if (!layer) {
+    throw new Error('Moorland layer URL not found')
+  }
+
+  const url = `${layer}/query`
+  const tokenResponse = await getCachedToken(server)
+
+  const body = {
+    geometry,
+    geometryType: 'esriGeometryPolygon',
+    spatialRel: 'esriSpatialRelIntersects',
+    outFields: '*',
+    f: 'geojson',
+    token: tokenResponse.access_token
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch from Moorland layer: ${response.statusText}`
+    )
+  }
+  return await response.json()
+}
+
 /**
  * @typedef ArcGISLandResponse
  * @property {Array} features
