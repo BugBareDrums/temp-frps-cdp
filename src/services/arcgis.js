@@ -83,7 +83,7 @@ export async function fetchMoorlandIntersection(server, geometry) {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   })
 
   if (!response.ok) {
@@ -91,6 +91,9 @@ export async function fetchMoorlandIntersection(server, geometry) {
       `Failed to fetch from Moorland layer: ${response.statusText}`
     )
   }
+
+  // console.log('RESPONSE::' + await response.text())
+
   return await response.json()
 }
 
