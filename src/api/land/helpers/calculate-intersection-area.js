@@ -1,45 +1,74 @@
-import {
-  findLandParcel,
-  fetchMoorlandIntersection
-} from '~/src/services/arcgis.js'
+import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js';
 
+/**
+ * Calculates the intersection areas of a land parcel with Moorland features.
+ * @param {import('@hapi/hapi').Server} server - The server instance.
+ * @param {string} landParcelId - The ID of the land parcel.
+ * @param {string} sheetId - The sheet ID of the land parcel.
+ * @returns {Promise<Array>} An array of intersection geometries.
+ */
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
-  const landParcelResponse = await findLandParcel(server, landParcelId, sheetId)
+  // Fetch the land parcel
+  const landParcelResponse = await findLandParcel(server, landParcelId, sheetId);
 
-  if (
-    !landParcelResponse?.features ||
-    landParcelResponse.features.length === 0
-  ) {
-    console.error('No features found for the provided land parcel.')
-    return 0
+  if (!landParcelResponse?.features || landParcelResponse.features.length === 0) {
+    console.error('No features found for the provided land parcel.');
+    return [];
   }
 
-  const parcelGeometry = landParcelResponse.features[0]?.geometry
+  const parcelGeometry = landParcelResponse.features[0]?.geometry;
 
-  if (!parcelGeometry?.coordinates) {
-    console.error('Invalid geometry in land parcel response.')
-    return 0
+  if (!parcelGeometry || !parcelGeometry.coordinates) {
+    throw new Error('Invalid geometry in land parcel response.');
   }
 
-  console.log('Fetched parcel geometry:', parcelGeometry)
+  console.log('Fetched parcel geometry:', parcelGeometry);
 
-  const moorlandResponse = await fetchMoorlandIntersection(server, parcelGeometry)
+  // Fetch Moorland intersections
+  const moorlandResponse = await fetchMoorlandIntersection(server, parcelGeometry);
 
   if (!moorlandResponse?.features || moorlandResponse.features.length === 0) {
-    console.error('No intersecting Moorland features found.')
-    return 0
+    console.error('No intersecting Moorland features found.');
+    return [];
   }
 
-  console.log('Fetched Moorland intersecting features:', moorlandResponse.features)
+  console.log('Fetched Moorland intersecting feaatures:', moorlandResponse.features);
 
-  // Placeholder: Aggregate intersection areas if needed
-  const intersectionArea = moorlandResponse.features.length * 100
+  // TODO is this loop necessary? https://developers.arcgis.com/rest/services-reference/enterprise/intersect/
+  // Calculate intersections for each Moorland feature
+  const intersections = await Promise.all(
+    moorlandResponse.features.map(async (feature) => {
+      const intersectResponse = await fetch(
+        'https://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/intersect',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            sr: 102009, // Spatial reference
+            geometries: JSON.stringify({
+              geometryType: 'esriGeometryPolygon',
+              geometries: [parcelGeometry], // Land parcel geometry
+            }),
+            geometry: JSON.stringify({
+              geometryType: 'esriGeometryPolygon',
+              geometry: feature.geometry, // Moorland feature geometry
+            }),
+            f: 'json',
+          }),
+        }
+      );
 
-  return intersectionArea
+      if (!intersectResponse.ok) {
+        throw new Error(`Failed to fetch intersection: ${intersectResponse.statusText}`);
+      }
+
+      const intersectResult = await intersectResponse.json()
+      return intersectResult.geometries
+    })
+  )
+
+  console.log('Intersect geometries:', intersections)
+  return intersections.flat()
 }
-
-// TODO get LP polygon by Id/SheetId - see arcgis.js
-// TODO get polygons that intersect from Moorland server - see arcgis.js need new function there, needs a POST request there
-
-// TODO use above in intersect api to get intersection polygon - see arcgis.js
-// TODO use areas and lengths from geometry server to calculate area of intersection polygon(s) - see arcgis.js need new function there
