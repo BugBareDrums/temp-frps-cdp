@@ -1,11 +1,11 @@
 import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js'
 
 /**
- * Calculates the intersection areas of a land parcel with Moorland features.
+ * Calculates the available area of a land parcel after intersecting with Moorland features.
  * @param {import('@hapi/hapi').Server} server - The server instance.
  * @param {string} landParcelId - The ID of the land parcel.
  * @param {string} sheetId - The sheet ID of the land parcel.
- * @returns {Promise<Array>} An array of intersection geometries.
+ * @returns {Promise<{ parcelId: string, totalArea: number, availableArea: number }>} An object containing the parcel ID, total intersected area, and available area.
  */
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
   // Fetch the land parcel
@@ -13,13 +13,15 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
 
   if (!landParcelResponse?.features || landParcelResponse.features.length === 0) {
     console.error('No features found for the provided land parcel.')
-    return []
+    return { parcelId: landParcelId, totalArea: 0, availableArea: 0 }
   }
 
-  const parcelGeometry = landParcelResponse.features[0]?.geometry
+  const parcelFeature = landParcelResponse.features[0]
+  const parcelGeometry = parcelFeature?.geometry
+  const parcelArea = parcelFeature?.properties?.GEOM_AREA_SQM
 
-  if (!parcelGeometry || !parcelGeometry.coordinates) {
-    throw new Error('Invalid geometry in land parcel response.')
+  if (!parcelGeometry || !parcelGeometry.coordinates || !parcelArea) {
+    throw new Error('Invalid geometry or area in land parcel response.')
   }
 
   console.log('Fetched parcel geometry:', parcelGeometry)
@@ -29,7 +31,7 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
 
   if (!moorlandResponse?.features || moorlandResponse.features.length === 0) {
     console.error('No intersecting Moorland features found.')
-    return []
+    return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea }
   }
 
   console.log('Fetched Moorland intersecting features:', moorlandResponse.features)
@@ -65,7 +67,51 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
   }
 
   const intersectResult = await intersectResponse.json()
+  const intersectedGeometries = intersectResult.geometries || []
 
-  console.log('Intersect geometries:', intersectResult.geometries)
-  return intersectResult.geometries || []
+  console.log('Intersect geometries:', intersectedGeometries)
+
+  if (intersectedGeometries.length === 0) {
+    console.error('No valid intersections found.')
+    return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea }
+  }
+
+  // Calculate areas of the intersected geometries using the Areas and Lengths API
+  const areaResponse = await fetch(
+    'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer/areasAndLengths',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        sr: 102009, // Spatial reference
+        polygons: JSON.stringify(intersectedGeometries),
+        areaUnit: JSON.stringify({ areaUnit: 'esriSquareMeters' }), // Calculate area in square meters
+        calculationType: 'preserveShape', // Preserve shape for more accurate calculations
+        f: 'json',
+      }),
+    }
+  )
+
+  if (!areaResponse.ok) {
+    throw new Error(`Failed to calculate areas: ${areaResponse.statusText}`)
+  }
+
+  const areaResult = await areaResponse.json()
+
+  console.log('Area calculation result:', areaResult)
+
+  // Sum up all areas
+  const totalArea = (areaResult.areas || []).reduce((sum, area) => sum + area, 0)
+  const availableArea = parcelArea - totalArea
+
+  console.log(`Total intersected area for parcel ${landParcelId}:`, totalArea)
+  console.log(`Available area for parcel ${landParcelId}:`, availableArea)
+
+  return {
+    parcelId: landParcelId,
+    totalArea,
+    availableArea,
+  }
 }

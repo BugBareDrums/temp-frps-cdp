@@ -26,6 +26,9 @@ describe('#calculateIntersectionArea', () => {
               [-3.84215781948155, 50.2369627492092]
             ]
           ]
+        },
+        properties: {
+          GEOM_AREA_SQM: 50000 // Parcel area for calculations
         }
       }
     ]
@@ -62,52 +65,9 @@ describe('#calculateIntersectionArea', () => {
     ]
   }
 
-  beforeEach(() => {
-    jest.clearAllMocks()
-
-    // Mock intersection API fetch response
-    global.fetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        geometryType: 'esriGeometryPolygon',
-        geometries: [
-          {
-            rings: [
-              [
-                [-117.18330000340939, 34.04949999973178],
-                [-117.18999999761581, 34.049300000071526],
-                [-117.18999999761581, 34.05400000140071],
-                [-117.18330000340939, 34.05400000140071],
-                [-117.18330000340939, 34.04949999973178]
-              ]
-            ]
-          },
-          {
-            rings: [
-              [
-                [-117.1900000034094, 34.05450000140071],
-                [-117.19199999761581, 34.05470000007153],
-                [-117.19199999761581, 34.05500000140071],
-                [-117.1900000034094, 34.05500000140071],
-                [-117.1900000034094, 34.05450000140071]
-              ]
-            ]
-          }
-        ]
-      })
-    })
-
-    arcgisService.findLandParcel.mockResolvedValue(mockLandParcelResponse)
-    arcgisService.fetchMoorlandIntersection.mockResolvedValue(mockMoorlandResponse)
-  })
-
-  test('should fetch intersections and return intersect geometries', async () => {
-    const result = await calculateIntersectionArea(
-      mockServer,
-      landParcelId,
-      sheetId
-    )
-    const expected = [
+  const mockIntersectResponse = {
+    geometryType: 'esriGeometryPolygon',
+    geometries: [
       {
         rings: [
           [
@@ -131,6 +91,48 @@ describe('#calculateIntersectionArea', () => {
         ]
       }
     ]
+  }
+
+  const mockAreasResponse = {
+    areas: [20000, 15000], // Areas for the two intersecting geometries
+    lengths: [null] // Not used in this case
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+
+    global.fetch.mockImplementation((url) => {
+      if (url.includes('intersect')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => mockIntersectResponse
+        })
+      } else if (url.includes('areasAndLengths')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => mockAreasResponse
+        })
+      } else {
+        return Promise.reject(new Error('Unknown URL'))
+      }
+    })
+
+    arcgisService.findLandParcel.mockResolvedValue(mockLandParcelResponse)
+    arcgisService.fetchMoorlandIntersection.mockResolvedValue(mockMoorlandResponse)
+  })
+
+  test('should fetch intersections, calculate areas, and return the result', async () => {
+    const result = await calculateIntersectionArea(
+      mockServer,
+      landParcelId,
+      sheetId
+    )
+
+    const expected = {
+      parcelId: '1234',
+      totalArea: 35000, // Sum of areas from the mockAreasResponse
+      availableArea: 15000 // 50000 - 35000
+    }
 
     // Assert
     expect(result).toEqual(expected)
@@ -139,7 +141,7 @@ describe('#calculateIntersectionArea', () => {
       mockServer,
       mockLandParcelResponse.features[0].geometry
     )
-    expect(fetch).toHaveBeenCalledTimes(1) // Only one call to the intersect API
+    expect(fetch).toHaveBeenCalledTimes(2) // One call for intersection, one for areas
   })
 
   test('should handle no land parcel features gracefully', async () => {
@@ -147,7 +149,13 @@ describe('#calculateIntersectionArea', () => {
 
     const result = await calculateIntersectionArea(mockServer, landParcelId, sheetId)
 
-    expect(result).toEqual([])
+    const expected = {
+      parcelId: '1234',
+      totalArea: 0,
+      availableArea: 0
+    }
+
+    expect(result).toEqual(expected)
     expect(arcgisService.findLandParcel).toHaveBeenCalledWith(mockServer, landParcelId, sheetId)
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -157,7 +165,13 @@ describe('#calculateIntersectionArea', () => {
 
     const result = await calculateIntersectionArea(mockServer, landParcelId, sheetId)
 
-    expect(result).toEqual([])
+    const expected = {
+      parcelId: '1234',
+      totalArea: 0,
+      availableArea: 50000 // Full parcel area since no intersections
+    }
+
+    expect(result).toEqual(expected)
     expect(arcgisService.fetchMoorlandIntersection).toHaveBeenCalledWith(
       mockServer,
       mockLandParcelResponse.features[0].geometry
