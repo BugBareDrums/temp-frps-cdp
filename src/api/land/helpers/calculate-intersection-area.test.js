@@ -1,11 +1,13 @@
 import { calculateIntersectionArea } from './calculate-intersection-area.js'
 import * as arcgisService from '~/src/services/arcgis.js'
 
+// Mock ArcGIS services
 jest.mock('~/src/services/arcgis.js', () => ({
   findLandParcel: jest.fn(),
-  fetchMoorlandIntersection: jest.fn()
+  fetchMoorlandIntersection: jest.fn(),
 }))
 
+// Mock fetch globally for external API calls
 global.fetch = jest.fn()
 
 describe('#calculateIntersectionArea', () => {
@@ -23,15 +25,15 @@ describe('#calculateIntersectionArea', () => {
               [-3.84215781948155, 50.2369627492092],
               [-3.84188557735844, 50.236368577696],
               [-3.84159762148358, 50.2357813103825],
-              [-3.84215781948155, 50.2369627492092]
-            ]
-          ]
+              [-3.84215781948155, 50.2369627492092],
+            ],
+          ],
         },
         properties: {
-          GEOM_AREA_SQM: 50000 // Parcel area for calculations
-        }
-      }
-    ]
+          GEOM_AREA_SQM: 50000, // Parcel area for calculations
+        },
+      },
+    ],
   }
 
   const mockMoorlandResponse = {
@@ -44,10 +46,10 @@ describe('#calculateIntersectionArea', () => {
               [-1.6372452684743, 53.4616238095816],
               [-1.63724434740339, 53.4616161198859],
               [-1.63723104195301, 53.4615013063136],
-              [-1.6372452684743, 53.4616238095816]
-            ]
-          ]
-        }
+              [-1.6372452684743, 53.4616238095816],
+            ],
+          ],
+        },
       },
       {
         geometry: {
@@ -57,12 +59,12 @@ describe('#calculateIntersectionArea', () => {
               [-1.6352452684743, 53.4611238095816],
               [-1.63524434740339, 53.4611161198859],
               [-1.63523104195301, 53.4605013063136],
-              [-1.6352452684743, 53.4611238095816]
-            ]
-          ]
-        }
-      }
-    ]
+              [-1.6352452684743, 53.4611238095816],
+            ],
+          ],
+        },
+      },
+    ],
   }
 
   const mockIntersectResponse = {
@@ -75,9 +77,9 @@ describe('#calculateIntersectionArea', () => {
             [-117.18999999761581, 34.049300000071526],
             [-117.18999999761581, 34.05400000140071],
             [-117.18330000340939, 34.05400000140071],
-            [-117.18330000340939, 34.04949999973178]
-          ]
-        ]
+            [-117.18330000340939, 34.04949999973178],
+          ],
+        ],
       },
       {
         rings: [
@@ -86,16 +88,16 @@ describe('#calculateIntersectionArea', () => {
             [-117.19199999761581, 34.05470000007153],
             [-117.19199999761581, 34.05500000140071],
             [-117.1900000034094, 34.05500000140071],
-            [-117.1900000034094, 34.05450000140071]
-          ]
-        ]
-      }
-    ]
+            [-117.1900000034094, 34.05450000140071],
+          ],
+        ],
+      },
+    ],
   }
 
   const mockAreasResponse = {
     areas: [20000, 15000], // Areas for the two intersecting geometries
-    lengths: [null] // Not used in this case
+    lengths: [null], // Not used in this case
   }
 
   beforeEach(() => {
@@ -105,12 +107,12 @@ describe('#calculateIntersectionArea', () => {
       if (url.includes('intersect')) {
         return Promise.resolve({
           ok: true,
-          json: async () => mockIntersectResponse
+          json: async () => mockIntersectResponse,
         })
       } else if (url.includes('areasAndLengths')) {
         return Promise.resolve({
           ok: true,
-          json: async () => mockAreasResponse
+          json: async () => mockAreasResponse,
         })
       } else {
         return Promise.reject(new Error('Unknown URL'))
@@ -122,16 +124,12 @@ describe('#calculateIntersectionArea', () => {
   })
 
   test('should fetch intersections, calculate areas, and return the result', async () => {
-    const result = await calculateIntersectionArea(
-      mockServer,
-      landParcelId,
-      sheetId
-    )
+    const result = await calculateIntersectionArea(mockServer, landParcelId, sheetId)
 
     const expected = {
       parcelId: '1234',
       totalArea: 35000, // Sum of areas from the mockAreasResponse
-      availableArea: 15000 // 50000 - 35000
+      availableArea: 15000, // 50000 - 35000
     }
 
     // Assert
@@ -139,7 +137,16 @@ describe('#calculateIntersectionArea', () => {
     expect(arcgisService.findLandParcel).toHaveBeenCalledWith(mockServer, landParcelId, sheetId)
     expect(arcgisService.fetchMoorlandIntersection).toHaveBeenCalledWith(
       mockServer,
-      mockLandParcelResponse.features[0].geometry
+      {
+        rings: [
+          [
+            [-3.84215781948155, 50.2369627492092],
+            [-3.84188557735844, 50.236368577696],
+            [-3.84159762148358, 50.2357813103825],
+            [-3.84215781948155, 50.2369627492092],
+          ],
+        ],
+      }
     )
     expect(fetch).toHaveBeenCalledTimes(2) // One call for intersection, one for areas
   })
@@ -152,7 +159,7 @@ describe('#calculateIntersectionArea', () => {
     const expected = {
       parcelId: '1234',
       totalArea: 0,
-      availableArea: 0
+      availableArea: 0,
     }
 
     expect(result).toEqual(expected)
@@ -168,13 +175,22 @@ describe('#calculateIntersectionArea', () => {
     const expected = {
       parcelId: '1234',
       totalArea: 0,
-      availableArea: 50000 // Full parcel area since no intersections
+      availableArea: 50000, // Full parcel area since no intersections
     }
 
     expect(result).toEqual(expected)
     expect(arcgisService.fetchMoorlandIntersection).toHaveBeenCalledWith(
       mockServer,
-      mockLandParcelResponse.features[0].geometry
+      {
+        rings: [
+          [
+            [-3.84215781948155, 50.2369627492092],
+            [-3.84188557735844, 50.236368577696],
+            [-3.84159762148358, 50.2357813103825],
+            [-3.84215781948155, 50.2369627492092],
+          ],
+        ],
+      }
     )
     expect(fetch).not.toHaveBeenCalled()
   })

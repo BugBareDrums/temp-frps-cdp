@@ -71,30 +71,38 @@ export async function fetchMoorlandIntersection(server, geometry) {
   const url = `${layer}/query`
   const tokenResponse = await getCachedToken(server)
 
-  const body = {
-    geometry,
+  // Transform geometry into the required ArcGIS `rings` format if necessary
+  const queryGeometry = {
+    rings: geometry.rings, // Assuming `geometry.coordinates` is in GeoJSON format
+  }
+
+  console.log('Formatted GEOMETRY for query:', JSON.stringify(queryGeometry))
+
+  const body = new URLSearchParams({
+    geometry: JSON.stringify(queryGeometry),
     geometryType: 'esriGeometryPolygon',
     spatialRel: 'esriSpatialRelIntersects',
     outFields: '*',
     f: 'geojson',
-    token: tokenResponse.access_token
-  }
+    token: tokenResponse.access_token, // Include the token for authentication
+  })
 
   const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: body.toString(),
   })
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch from Moorland layer: ${response.statusText}`
-    )
+    throw new Error(`Failed to fetch from Moorland layer: ${response.statusText}`)
   }
 
-  // console.log('RESPONSE::' + await response.text())
+  const jsonResponse = await response.json()
+  console.log('Moorland Intersection Response:', JSON.stringify(jsonResponse, null, 2))
 
-  return await response.json()
+  return jsonResponse
 }
 
 /**

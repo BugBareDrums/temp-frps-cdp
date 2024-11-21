@@ -1,6 +1,20 @@
 import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js'
 
 /**
+ * Transforms a geometry in GeoJSON format to the ArcGIS `rings` format.
+ * @param {Object} geometry - The GeoJSON geometry.
+ * @returns {Object} The ArcGIS `rings`-formatted geometry.
+ */
+function transformGeometryToRings(geometry) {
+  if (!geometry || geometry.type !== 'Polygon' || !geometry.coordinates) {
+    throw new Error('Invalid input geometry')
+  }
+  return {
+    rings: geometry.coordinates,
+  }
+}
+
+/**
  * Calculates the available area of a land parcel after intersecting with Moorland features.
  * @param {import('@hapi/hapi').Server} server - The server instance.
  * @param {string} landParcelId - The ID of the land parcel.
@@ -24,10 +38,11 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
     throw new Error('Invalid geometry or area in land parcel response.')
   }
 
-  console.log('Fetched parcel geometry:', parcelGeometry)
+  // Transform the parcel geometry into the required ArcGIS format
+  const transformedParcelGeometry = transformGeometryToRings(parcelGeometry)
 
   // Fetch Moorland intersections
-  const moorlandResponse = await fetchMoorlandIntersection(server, parcelGeometry)
+  const moorlandResponse = await fetchMoorlandIntersection(server, transformedParcelGeometry)
 
   if (!moorlandResponse?.features || moorlandResponse.features.length === 0) {
     console.error('No intersecting Moorland features found.')
@@ -37,8 +52,10 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
   console.log('Fetched Moorland intersecting features:', moorlandResponse.features)
 
   // Combine all Moorland feature geometries into the `geometries` parameter
-  const moorlandGeometries = moorlandResponse.features.map((feature) => feature.geometry)
-
+  const moorlandGeometries = moorlandResponse.features.map((feature) =>
+    transformGeometryToRings(feature.geometry)
+  )
+  // TODO log body and test!
   // Make a single intersect API call
   const intersectResponse = await fetch(
     'https://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/intersect',
@@ -51,7 +68,7 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
         sr: 102009, // Spatial reference
         geometry: JSON.stringify({
           geometryType: 'esriGeometryPolygon',
-          geometry: parcelGeometry, // Single land parcel geometry
+          geometry: transformedParcelGeometry, // Single land parcel geometry
         }),
         geometries: JSON.stringify({
           geometryType: 'esriGeometryPolygon',
