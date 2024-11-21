@@ -65,46 +65,37 @@ describe('#calculateIntersectionArea', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    // mock intersection fetch responses
-    global.fetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          geometryType: 'esriGeometryPolygon',
-          geometries: [
-            {
-              rings: [
-                [
-                  [-117.18330000340939, 34.04949999973178],
-                  [-117.18999999761581, 34.049300000071526],
-                  [-117.18999999761581, 34.05400000140071],
-                  [-117.18330000340939, 34.05400000140071],
-                  [-117.18330000340939, 34.04949999973178]
-                ]
+    // Mock intersection API fetch response
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        geometryType: 'esriGeometryPolygon',
+        geometries: [
+          {
+            rings: [
+              [
+                [-117.18330000340939, 34.04949999973178],
+                [-117.18999999761581, 34.049300000071526],
+                [-117.18999999761581, 34.05400000140071],
+                [-117.18330000340939, 34.05400000140071],
+                [-117.18330000340939, 34.04949999973178]
               ]
-            }
-          ]
-        })
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          geometryType: 'esriGeometryPolygon',
-          geometries: [
-            {
-              rings: [
-                [
-                  [-117.1900000034094, 34.05450000140071],
-                  [-117.19199999761581, 34.05470000007153],
-                  [-117.19199999761581, 34.05500000140071],
-                  [-117.1900000034094, 34.05500000140071],
-                  [-117.1900000034094, 34.05450000140071]
-                ]
+            ]
+          },
+          {
+            rings: [
+              [
+                [-117.1900000034094, 34.05450000140071],
+                [-117.19199999761581, 34.05470000007153],
+                [-117.19199999761581, 34.05500000140071],
+                [-117.1900000034094, 34.05500000140071],
+                [-117.1900000034094, 34.05450000140071]
               ]
-            }
-          ]
-        })
+            ]
+          }
+        ]
       })
+    })
 
     arcgisService.findLandParcel.mockResolvedValue(mockLandParcelResponse)
     arcgisService.fetchMoorlandIntersection.mockResolvedValue(mockMoorlandResponse)
@@ -135,7 +126,7 @@ describe('#calculateIntersectionArea', () => {
             [-117.19199999761581, 34.05470000007153],
             [-117.19199999761581, 34.05500000140071],
             [-117.1900000034094, 34.05500000140071],
-            [-117.1900000034094, 34.05450000140071],
+            [-117.1900000034094, 34.05450000140071]
           ]
         ]
       }
@@ -148,7 +139,7 @@ describe('#calculateIntersectionArea', () => {
       mockServer,
       mockLandParcelResponse.features[0].geometry
     )
-    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fetch).toHaveBeenCalledTimes(1) // Only one call to the intersect API
   })
 
   test('should handle no land parcel features gracefully', async () => {

@@ -1,4 +1,4 @@
-import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js';
+import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js'
 
 /**
  * Calculates the intersection areas of a land parcel with Moorland features.
@@ -9,66 +9,63 @@ import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis
  */
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
   // Fetch the land parcel
-  const landParcelResponse = await findLandParcel(server, landParcelId, sheetId);
+  const landParcelResponse = await findLandParcel(server, landParcelId, sheetId)
 
   if (!landParcelResponse?.features || landParcelResponse.features.length === 0) {
-    console.error('No features found for the provided land parcel.');
-    return [];
+    console.error('No features found for the provided land parcel.')
+    return []
   }
 
-  const parcelGeometry = landParcelResponse.features[0]?.geometry;
+  const parcelGeometry = landParcelResponse.features[0]?.geometry
 
   if (!parcelGeometry || !parcelGeometry.coordinates) {
-    throw new Error('Invalid geometry in land parcel response.');
+    throw new Error('Invalid geometry in land parcel response.')
   }
 
-  console.log('Fetched parcel geometry:', parcelGeometry);
+  console.log('Fetched parcel geometry:', parcelGeometry)
 
   // Fetch Moorland intersections
-  const moorlandResponse = await fetchMoorlandIntersection(server, parcelGeometry);
+  const moorlandResponse = await fetchMoorlandIntersection(server, parcelGeometry)
 
   if (!moorlandResponse?.features || moorlandResponse.features.length === 0) {
-    console.error('No intersecting Moorland features found.');
-    return [];
+    console.error('No intersecting Moorland features found.')
+    return []
   }
 
-  console.log('Fetched Moorland intersecting feaatures:', moorlandResponse.features);
+  console.log('Fetched Moorland intersecting features:', moorlandResponse.features)
 
-  // TODO is this loop necessary? https://developers.arcgis.com/rest/services-reference/enterprise/intersect/
-  // Calculate intersections for each Moorland feature
-  const intersections = await Promise.all(
-    moorlandResponse.features.map(async (feature) => {
-      const intersectResponse = await fetch(
-        'https://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/intersect',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            sr: 102009, // Spatial reference
-            geometries: JSON.stringify({
-              geometryType: 'esriGeometryPolygon',
-              geometries: [parcelGeometry], // Land parcel geometry
-            }),
-            geometry: JSON.stringify({
-              geometryType: 'esriGeometryPolygon',
-              geometry: feature.geometry, // Moorland feature geometry
-            }),
-            f: 'json',
-          }),
-        }
-      );
+  // Combine all Moorland feature geometries into the `geometries` parameter
+  const moorlandGeometries = moorlandResponse.features.map((feature) => feature.geometry)
 
-      if (!intersectResponse.ok) {
-        throw new Error(`Failed to fetch intersection: ${intersectResponse.statusText}`);
-      }
-
-      const intersectResult = await intersectResponse.json()
-      return intersectResult.geometries
-    })
+  // Make a single intersect API call
+  const intersectResponse = await fetch(
+    'https://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/intersect',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        sr: 102009, // Spatial reference
+        geometry: JSON.stringify({
+          geometryType: 'esriGeometryPolygon',
+          geometry: parcelGeometry, // Single land parcel geometry
+        }),
+        geometries: JSON.stringify({
+          geometryType: 'esriGeometryPolygon',
+          geometries: moorlandGeometries, // Moorland geometries
+        }),
+        f: 'json',
+      }),
+    }
   )
 
-  console.log('Intersect geometries:', intersections)
-  return intersections.flat()
+  if (!intersectResponse.ok) {
+    throw new Error(`Failed to fetch intersection: ${intersectResponse.statusText}`)
+  }
+
+  const intersectResult = await intersectResponse.json()
+
+  console.log('Intersect geometries:', intersectResult.geometries)
+  return intersectResult.geometries || []
 }
