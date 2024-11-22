@@ -127,7 +127,7 @@ const findLandParcelBySbiController = {
       })
 
       // Calculate intersection areas for a sample parcel and log the response
-      const moorland = await calculateIntersectionArea(request.server, '4775', 'SJ9442')
+      const moorland = await calculateIntersectionArea(request.server, '1040', 'SK0140')
       console.log('Moorland response:', JSON.stringify(moorland))
 
       return h

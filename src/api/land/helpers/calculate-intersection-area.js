@@ -1,4 +1,7 @@
-import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis.js';
+import {
+  findLandParcel,
+  fetchMoorlandIntersection
+} from '~/src/services/arcgis.js'
 
 /**
  * Transforms a geometry in GeoJSON format to the ArcGIS `rings` format.
@@ -8,7 +11,7 @@ import { findLandParcel, fetchMoorlandIntersection } from '~/src/services/arcgis
  */
 function transformGeometryToRings(geometry) {
   if (!geometry || geometry.type !== 'Polygon' || !geometry.coordinates) {
-    throw new Error('Invalid input geometry');
+    throw new Error('Invalid input geometry')
   }
   return {
     rings: geometry.coordinates.map((ring) => {
@@ -16,11 +19,11 @@ function transformGeometryToRings(geometry) {
         ring[0][0] !== ring[ring.length - 1][0] ||
         ring[0][1] !== ring[ring.length - 1][1]
       ) {
-        return [...ring, ring[0]]; // Ensure the ring is closed
+        return [...ring, ring[0]] // Ensure the ring is closed
       }
       return ring;
     }),
-  };
+  }
 }
 
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
@@ -28,8 +31,8 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
     // Fetch the land parcel
     const landParcelResponse = await findLandParcel(server, landParcelId, sheetId);
     if (!landParcelResponse?.features || landParcelResponse.features.length === 0) {
-      console.error('No features found for the provided land parcel.');
-      return { parcelId: landParcelId, totalArea: 0, availableArea: 0 };
+      console.error('No features found for the provided land parcel.')
+      return { parcelId: landParcelId, totalArea: 0, availableArea: 0 }
     }
 
     const parcelFeature = landParcelResponse.features[0];
@@ -37,25 +40,23 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
     const parcelArea = parcelFeature?.properties?.GEOM_AREA_SQM;
 
     if (!parcelGeometry || !parcelGeometry.coordinates || !parcelArea) {
-      throw new Error('Invalid geometry or area in land parcel response.');
+      throw new Error('Invalid geometry or area in land parcel response.')
     }
 
     // Transform the parcel geometry into the required ArcGIS format
     const transformedParcelGeometry = transformGeometryToRings(parcelGeometry);
 
-    console.log('Transformed parcel geometry:', JSON.stringify(transformedParcelGeometry, null, 2));
-
     // Fetch Moorland intersections
-    const moorlandResponse = await fetchMoorlandIntersection(server, transformedParcelGeometry);
+    const moorlandResponse = await fetchMoorlandIntersection(server, transformedParcelGeometry)
 
     if (!moorlandResponse?.features || moorlandResponse.features.length === 0) {
-      console.error('No intersecting Moorland features found.');
-      return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea };
+      console.error('No intersecting Moorland features found.')
+      return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea }
     }
 
     const moorlandGeometries = moorlandResponse.features.map((feature) =>
       transformGeometryToRings(feature.geometry)
-    );
+    )
 
     // Make the intersect API call
     const intersectRequestBody = new URLSearchParams({
@@ -68,28 +69,30 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
         geometryType: 'esriGeometryPolygon',
         geometries: moorlandGeometries,
       }),
-      f: 'json',
-    });
+      f: 'json'
+    })
 
     const intersectResponse = await fetch(
       'https://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/intersect',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: intersectRequestBody,
+        body: intersectRequestBody
       }
-    );
+    )
 
     if (!intersectResponse.ok) {
-      throw new Error(`Failed to fetch intersection: ${intersectResponse.statusText}`);
+      throw new Error(
+        `Failed to fetch intersection: ${intersectResponse.statusText}`
+      )
     }
 
-    const intersectResult = await intersectResponse.json();
-    const intersectedGeometries = intersectResult.geometries || [];
+    const intersectResult = await intersectResponse.json()
+    const intersectedGeometries = intersectResult.geometries || []
 
     if (intersectedGeometries.length === 0) {
-      console.error('No valid intersections found.');
-      return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea };
+      console.error('No valid intersections found.')
+      return { parcelId: landParcelId, totalArea: 0, availableArea: parcelArea }
     }
 
     // Calculate areas of the intersected geometries using the Areas and Lengths API
@@ -98,34 +101,34 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
       polygons: JSON.stringify(intersectedGeometries),
       areaUnit: JSON.stringify({ areaUnit: 'esriSquareMeters' }),
       calculationType: 'preserveShape',
-      f: 'json',
-    });
+      f: 'json'
+    })
 
     const areaResponse = await fetch(
       'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer/areasAndLengths',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: areaRequestBody,
+        body: areaRequestBody
       }
-    );
+    )
 
     if (!areaResponse.ok) {
-      throw new Error(`Failed to calculate areas: ${areaResponse.statusText}`);
+      throw new Error(`Failed to calculate areas: ${areaResponse.statusText}`)
     }
 
-    const areaResult = await areaResponse.json();
+    const areaResult = await areaResponse.json()
 
-    const totalArea = (areaResult.areas || []).reduce((sum, area) => sum + area, 0);
-    const availableArea = parcelArea - totalArea;
+    const totalArea = (areaResult.areas || []).reduce((sum, area) => sum + area, 0)
+    const availableArea = parcelArea - totalArea
 
     return {
       parcelId: landParcelId,
       totalArea,
-      availableArea,
-    };
+      availableArea
+    }
   } catch (error) {
-    console.error(`Error in calculateIntersectionArea: ${error.message}`);
-    return { parcelId: landParcelId, totalArea: 0, availableArea: 0 };
+    console.error(`Error in calculateIntersectionArea: ${error.message}`)
+    return { parcelId: landParcelId, totalArea: 0, availableArea: 0 }
   }
 }
