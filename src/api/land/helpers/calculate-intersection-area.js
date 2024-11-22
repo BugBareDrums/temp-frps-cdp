@@ -119,6 +119,7 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
 
     const areaResult = await areaResponse.json()
 
+    // may have error margin due to maximum number of vertices per geometry of public API i.e.snapping
     const totalArea = (areaResult.areas || []).reduce((sum, area) => sum + area, 0)
     const availableArea = parcelArea - totalArea
 
