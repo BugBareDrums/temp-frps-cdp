@@ -4,13 +4,6 @@ import {
 } from '~/src/services/arcgis.js'
 
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
-  console.log(
-    'MOORLAND INTERSECTION CALCULATION CALLED::' +
-      'landParcelId:' +
-      landParcelId +
-      'sheetId:' +
-      sheetId
-  )
   try {
     const landParcelResponse = await findLandParcel(
       server,
@@ -78,7 +71,7 @@ export async function calculateIntersectionArea(server, landParcelId, sheetId) {
       (sum, area) => sum + area,
       0
     )
-    const availableArea = parcelArea - totalArea // available area is the difference between the total area of the parcel and the area of the moorland intersection
+    const availableArea = parcelArea - totalArea
 
     return {
       parcelId: landParcelId,
