@@ -1,4 +1,4 @@
-import { config } from '~/src/config/index.js';
+import { config } from '~/src/config/index.js'
 
 export async function isBelowMoorlandLine(application) {
   // if (application?.landParcel?.moorlandLineStatus !== 'below') {
@@ -13,12 +13,9 @@ export async function isBelowMoorlandLine(application) {
   const response = await fetch(url) // Await the fetch response
   console.log('Response Status Code:', response.status) // Log the status code
 
-  if (!response.ok) {
-    console.error('Failed to fetch moorland data:', response.statusText)
-    return { passed: false, message: `Fetch failed with status: ${response.status}` }
-  }
 
-  const moorland = await response.json(); // Parse the response body as JSON
+  const moorland = await response.json()
+
   console.log('Moorland response:', JSON.stringify(moorland))
-  return { passed: true }
+  return { passed: moorland.availableArea > 0 }
 }

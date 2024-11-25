@@ -73,7 +73,7 @@ const executeActionRules = async (db, userSelectedActions, landParcel) => {
         moorlandLineStatus: landParcel.moorlandLineStatus,
         existingAgreements: [],
         id: landParcel.id,
-        sheetId:landParcel.sheetId
+        sheetId: landParcel.sheetId
       }
     }
     const userSelectedAction = actionPromises[index]
