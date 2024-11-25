@@ -1,20 +1,19 @@
 import Boom from '@hapi/boom'
 import isNull from 'lodash/isNull.js'
-
-import { findLandParcelIntersects } from '~/src/services/arcgis.js'
+import { calculateIntersectionArea } from '~/src/api/land/helpers/calculate-intersection-area.js'
 
 /**
  *
  * @satisfies {Partial<ServerRoute>}
  */
-const findLandParcelIntersectsController = {
+const findMoorlandIntersectsController = {
   /**
    * @param { import('@hapi/hapi').Request & MongoDBPlugin } request
    * @param { import('@hapi/hapi').ResponseToolkit } h
    * @returns {Promise<*>}
    */
   handler: async (request, h) => {
-    const entity = await findLandParcelIntersects(
+    const entity = await calculateIntersectionArea(
       request.server,
       request.query.landParcelId,
       request.query.sheetId
@@ -27,7 +26,7 @@ const findLandParcelIntersectsController = {
   }
 }
 
-export { findLandParcelIntersectsController }
+export { findMoorlandIntersectsController }
 
 /**
  * @import { ServerRoute} from '@hapi/hapi'

@@ -4,6 +4,13 @@ import {
 } from '~/src/services/arcgis.js'
 
 export async function calculateIntersectionArea(server, landParcelId, sheetId) {
+  console.log(
+    'MOORLAND INTERSECTION CALCULATION CALLED::' +
+      'landParcelId:' +
+      landParcelId +
+      'sheetId:' +
+      sheetId
+  )
   try {
     const landParcelResponse = await findLandParcel(
       server,

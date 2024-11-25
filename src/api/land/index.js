@@ -37,12 +37,18 @@ const land = {
           method: 'GET',
           path: '/land/parcel/{landParcelId}/intersects',
           ...findLandParcelIntersectsController
+        },
+        {
+          method: 'GET',
+          path: '/land/moorland/intersects',
+          ...findLandParcelIntersectsController
         }
       ])
     }
   }
 }
-
+//      request.params.landParcelId,
+//       request.query.sheetId
 export { land }
 
 /**
