@@ -6,8 +6,8 @@ export async function isBelowMoorlandLine(application) {
   // }
   // TODO introduce intersections API call - TBD
 
-  console.log('APPLICATION_PAYLOAD:', JSON.stringify(application.landParcel));
-  const url = `http://localhost:${config.get('port')}/land/moorland/intersects?landParcelId=${application.landParcel.id}&sheetId=${application.landParcel.sheetId}`;
+  console.log('APPLICATION_PAYLOAD:', JSON.stringify(application.landParcel))
+  const url = `http://localhost:${config.get('port')}/land/moorland/intersects?landParcelId=${application.landParcel.id}&sheetId=${application.landParcel.sheetId}`
   console.log('Fetching URL:', url)
 
   const response = await fetch(url) // Await the fetch response
