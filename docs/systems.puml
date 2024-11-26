@@ -14,7 +14,7 @@
   !endprocedure
 
   !procedure applicationUi($type = "internal")
-      $system($type, "applicationUi", "Application UI", "Hosts a funding application form web pages.")
+      $system($type, "applicationUi", "Application UI", "Hosts a funding application form web pages. Shared service between RPS, FETF and any other funding areas.")
   !endprocedure
 
   !procedure applicationManagement($type = "internal")
@@ -29,6 +29,10 @@
     $system($type, "arcGis", "ArcGIS", "A system providing land data and geospatial processing")
   !endprocedure
 
+  !procedure agreementSystem($type = "external")
+    $system($type, "agreementSystem", "Agreement Service", "System of record for active and historic agreements")
+  !endprocedure
+
   !procedure paymentHub()
     $system("external", "paymentHub", "Payment Hub", "A system for processing payments")
   !endprocedure
@@ -37,8 +41,12 @@
     $system("external", "fraudService", "Fraud Service", "Access to fraud markers Fraud status assessment")
   !endprocedure
 
-  !procedure agreementService()
-    $system("external", "agreementService", "Agreement Service", "A service for creation of agreements, payment schedules and (contract signing?)")
+  !procedure singleFrontDoor()
+    $system("external", "singleFrontDoor", "Single Front Door", "A login and home page for all DEFRA farming")
+  !endprocedure
+
+  !procedure identity()
+    $system("external", "identity", "DEFRA.Identity", "A system for managing user identities")
   !endprocedure
 
   !procedure lms()
@@ -51,5 +59,9 @@
 
   !procedure landService($type = "external")
     $system($type, "landService", "Land Service", "A facade service for retrieving land data and performing geospatial processing")
+  !endprocedure
+
+  !procedure grantApplicationService($type = "external")
+    $system($type, "grantApplicationService", "Grant Application Service", "System of record for grant applications and definitions")
   !endprocedure
 @enduml

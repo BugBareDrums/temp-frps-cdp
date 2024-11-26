@@ -1,12 +1,14 @@
 # Application Form UI
 
-Hosts a funding application form web pages.
+Hosts a funding application form web pages. Shared service between RPS, FETF and any other funding areas.
 
 ## Capabilities
 
 ### Application form rendering
 
 Generation of html pages on which are questions to help determine actions eligibility.
+
+### Application form flow
 
 ## Data stored
 
