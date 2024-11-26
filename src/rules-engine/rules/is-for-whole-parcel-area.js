@@ -4,11 +4,9 @@ export function isForWholeParcelArea(application) {
     landParcel: { area }
   } = application
 
-  const passed = areaAppliedFor === area
-
-  if (!passed) {
+  if (areaAppliedFor !== area) {
     return {
-      passed,
+      passed: false,
       message: `Area applied for (${areaAppliedFor}ha) does not match parcel area (${area}ha)`
     }
   }

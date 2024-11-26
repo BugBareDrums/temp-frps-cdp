@@ -7,12 +7,14 @@
   applicationBuilder()
   policyImplementer()
   
+  grantApplicationService("external")
   landGrants("external")
   applicationUi("external")
   applicationManagement("external")
 
   Rel(policyImplementer, applicationBuilder, "Implements policy using", "http")
-  Rel(applicationBuilder, landGrants, "Provides config to", "event")
+  Rel(applicationBuilder, grantApplicationService, "Provides config to", "event")
+  Rel(grantApplicationService, landGrants, "Provides config to", "event")
   Rel(applicationBuilder, applicationManagement, "Provides config to", "event")
   Rel(applicationBuilder, applicationUi, "Provides config to", "event")
 @enduml
