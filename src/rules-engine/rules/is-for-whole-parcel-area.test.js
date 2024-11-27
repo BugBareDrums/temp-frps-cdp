@@ -7,7 +7,9 @@ describe('is-for-whole-parcel-area', function () {
       areaAppliedFor: 100,
       actionCodeAppliedFor: 'SAM1',
       landParcel: {
-        area: 100
+        area: 100,
+        existingAgreements: [],
+        intersections: {}
       }
     }
 
@@ -24,7 +26,9 @@ describe('is-for-whole-parcel-area', function () {
       areaAppliedFor: 99,
       actionCodeAppliedFor: 'SAM1',
       landParcel: {
-        area: 100
+        area: 100,
+        existingAgreements: [],
+        intersections: {}
       }
     }
 
