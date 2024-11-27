@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom'
 import Joi from 'joi'
+import { config } from '~/src/config/index.js'
 import { findAction } from '../helpers/find-action.js'
 import { actionCombinationLandUseCompatibilityMatrix } from '~/src/api/available-area/helpers/action-land-use-compatibility-matrix.js'
 import { executeRules } from '~/src/rules-engine/rulesEngine.js'
@@ -51,38 +52,67 @@ const isValidCombination = (
 }
 
 /**
- *
+ * Finds and fetches any intersection data required for applicable eligibility rules
+ * @param {*} landParcel
+ * @param {*} action
+ * @returns { Promise<*> }
+ */
+const findIntersections = async (landParcel, action) => ({
+  ...landParcel,
+  intersections: (
+    await Promise.all(
+      action.eligibilityRules.map(async (rule) => {
+        if (rule.id === 'is-below-moorland-line') {
+          const response = await fetch(
+            `http://localhost:${config.get('port')}/land/moorland/intersects?landParcelId=${landParcel.id}&sheetId=${landParcel.sheetId}`
+          )
+          const json = await response.json()
+          return ['moorland', json.percentage] // TODO - This needs to be replaced with where we're getting the moorland intersection from ArgGIS
+        }
+      })
+    )
+  )
+    .filter((data) => data !== undefined)
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+})
+
+/**
+ * Executes action rules
  * @param { import('mongodb').Db } db
  * @param { Array } userSelectedActions
  * @param { object } landParcel
  * @returns
  */
 const executeActionRules = async (db, userSelectedActions, landParcel) => {
-  const actionPromises = await Promise.all(
+  const actions = await Promise.all(
     userSelectedActions.map(
       async (action) => await findAction(db, action.actionCode)
     )
   )
 
-  return userSelectedActions.map((action, index) => {
-    const application = {
-      areaAppliedFor: parseFloat(action.quantity),
-      actionCodeAppliedFor: action.actionCode,
-      landParcel: {
-        area: parseFloat(landParcel.area),
-        moorlandLineStatus: landParcel.moorlandLineStatus,
-        existingAgreements: [],
-        id: landParcel.id,
-        sheetId: landParcel.sheetId
+  return await Promise.all(
+    userSelectedActions.map(async (action, index) => {
+      const application = {
+        areaAppliedFor: parseFloat(action.quantity),
+        actionCodeAppliedFor: action.actionCode,
+        landParcel: {
+          area: parseFloat(landParcel.area),
+          existingAgreements: [],
+          id: landParcel.id,
+          sheetId: landParcel.sheetId
+        }
       }
-    }
-    const userSelectedAction = actionPromises[index]
+      application.landParcel = await findIntersections(
+        landParcel,
+        actions[index]
+      )
 
-    return {
-      action: action.actionCode,
-      ...executeRules(application, userSelectedAction.eligibilityRules)
-    }
-  })
+      return {
+        action: action.actionCode,
+        ...executeRules(application, actions[index].eligibilityRules)
+      }
+    })
+  )
 }
 
 /**

@@ -12,7 +12,9 @@ const baseUrls = {
   landCover:
     'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Land_Covers/FeatureServer/0',
   moorland:
-    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Moorland/FeatureServer/0'
+    'https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Moorland/FeatureServer/0',
+  utilities:
+    'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer'
 }
 
 /**
@@ -149,6 +151,20 @@ export async function findLandParcelIntersects(server, landParcelId, sheetId) {
     resourceName: 'intersects',
     landParcelId,
     sheetId
+  })
+}
+
+/**
+ * Performs utility functions on land parcel data.
+ * @param { URLSearchParams } body
+ * @param { string } utility
+ * @returns {Promise<Response>}
+ */
+export async function performUtilityFunction(body, utility) {
+  return await fetch(`${baseUrls.utilities}/${utility}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body
   })
 }
 

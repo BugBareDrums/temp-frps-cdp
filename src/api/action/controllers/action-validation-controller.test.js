@@ -2,6 +2,8 @@ import Hapi from '@hapi/hapi'
 import { action } from '../index.js'
 import { actions as mockActions } from '~/src/helpers/seed-db/data/actions.js'
 
+const originalFetch = global.fetch
+
 jest.mock('../helpers/find-action.js', () => ({
   findAction: jest.fn(() => Promise.resolve(mockActions[0]))
 }))
@@ -12,10 +14,21 @@ describe('Action Validation controller', () => {
   beforeAll(async () => {
     await server.register([action])
     await server.initialize()
+
+    global.fetch = jest.fn((url = '') => {
+      if (typeof url !== 'string') {
+        return Promise.reject(new Error('Invalid URL'))
+      }
+
+      const response = new Response()
+      response.json = () => Promise.resolve({ percentage: 0.7 }) // TODO - This needs to be replaced with ArcGIS intersection area
+      return Promise.resolve(response)
+    })
   })
 
   afterAll(async () => {
     await server.stop()
+    global.fetch = originalFetch
   })
 
   describe('POST /action-validation route', () => {
@@ -84,15 +97,14 @@ describe('Action Validation controller', () => {
           actions: [
             {
               actionCode: 'CSAM1',
-              quantity: '5.2721',
+              quantity: 5.2721,
               description: 'Herbal leys'
             }
           ],
           landParcel: {
-            parcelId: '5351',
-            area: '5.2721',
-            osSheetId: 'SK1715',
-            moorlandLineStatus: 'below',
+            id: '5351',
+            area: 5.2721,
+            sheetId: 'SK1715',
             agreements: [],
             landUseCodes: ['PG01']
           }
@@ -118,15 +130,14 @@ describe('Action Validation controller', () => {
           actions: [
             {
               actionCode: 'CSAM1',
-              quantity: '6.2721',
+              quantity: 6.2721,
               description: 'Herbal leys'
             }
           ],
           landParcel: {
-            parcelId: '5351',
-            area: '5.2721',
-            osSheetId: 'SK1715',
-            moorlandLineStatus: 'below',
+            id: '5351',
+            area: 5.2721,
+            sheetId: 'SK1715',
             agreements: [],
             landUseCodes: ['PG01']
           }
@@ -145,41 +156,6 @@ describe('Action Validation controller', () => {
       )
     })
 
-    test('should return 200 with the correct message if the combination is invalid', async () => {
-      // TODO - Need to find a combination of codes that are invalid
-      const request = {
-        method: 'POST',
-        url: '/action-validation',
-        payload: {
-          actions: [
-            {
-              actionCode: 'CSAM15', // why does this made up code work??
-              quantity: '5.2721',
-              description: 'Herbal leys'
-            }
-          ],
-          landParcel: {
-            parcelId: '5351',
-            area: '5.2721',
-            osSheetId: 'SK1715',
-            moorlandLineStatus: 'below',
-            agreements: [],
-            landUseCodes: ['PG01']
-          }
-        }
-      }
-
-      const { statusCode, result } = await server.inject(request)
-
-      expect(statusCode).toBe(200)
-      expect(result).toBe(
-        JSON.stringify({
-          message: 'Action combination valid',
-          isValidCombination: true
-        })
-      )
-    })
-
     test('should return 200 with the correct message if the combination is valid', async () => {
       const request = {
         method: 'POST',
@@ -188,15 +164,14 @@ describe('Action Validation controller', () => {
           actions: [
             {
               actionCode: 'CSAM1',
-              quantity: '5.2721',
+              quantity: 5.2721,
               description: 'Herbal leys'
             }
           ],
           landParcel: {
-            parcelId: '5351',
-            area: '5.2721',
-            osSheetId: 'SK1715',
-            moorlandLineStatus: 'below',
+            id: '5351',
+            area: 5.2721,
+            sheetId: 'SK1715',
             agreements: [],
             landUseCodes: ['PG01']
           }

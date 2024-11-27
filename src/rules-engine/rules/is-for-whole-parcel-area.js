@@ -1,3 +1,8 @@
+/**
+ *
+ * @param { Application } application
+ * @returns { RuleResponse }> }
+ */
 export function isForWholeParcelArea(application) {
   const {
     areaAppliedFor,
@@ -15,3 +20,5 @@ export function isForWholeParcelArea(application) {
 
   return { passed: true }
 }
+
+/** @import { Application, RuleResponse } from '~/src/types.js' */
