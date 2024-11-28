@@ -15,13 +15,19 @@ describe('Action Validation controller', () => {
     await server.register([action])
     await server.initialize()
 
+    // Mock fetch to provide expected structure
     global.fetch = jest.fn((url = '') => {
       if (typeof url !== 'string') {
         return Promise.reject(new Error('Invalid URL'))
       }
 
       const response = new Response()
-      response.json = () => Promise.resolve({ percentage: 0.7 }) // TODO - This needs to be replaced with ArcGIS intersection area
+      response.json = () =>
+        Promise.resolve({
+          entity: {
+            availableArea: 0.7
+          }
+        })
       return Promise.resolve(response)
     })
   })
@@ -89,7 +95,7 @@ describe('Action Validation controller', () => {
       expect(message).toBe('"landParcel" is required')
     })
 
-    test('should return 200 with the correct message if theres a valid combination', async () => {
+    test('should return 200 with the correct message if there is a valid combination', async () => {
       const request = {
         method: 'POST',
         url: '/action-validation',
@@ -114,7 +120,7 @@ describe('Action Validation controller', () => {
       const { statusCode, result } = await server.inject(request)
 
       expect(statusCode).toBe(200)
-      expect(result).toBe(
+      expect(result).toEqual(
         JSON.stringify({
           message: 'Action combination valid',
           isValidCombination: true
