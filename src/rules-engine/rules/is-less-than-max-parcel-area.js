@@ -3,7 +3,7 @@ export const isLessThanMaximumParcelArea = (application, ruleConfig) => {
     landParcel: { area }
   } = application
 
-  const passed = area < ruleConfig.maxArea
+  const passed = area.toString() < ruleConfig.maxArea.toString()
 
   return !passed
     ? {
