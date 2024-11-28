@@ -63,11 +63,13 @@ const findIntersections = async (landParcel, action) => ({
     await Promise.all(
       action.eligibilityRules.map(async (rule) => {
         if (rule.id === 'is-below-moorland-line') {
+          landParcel.id = landParcel.id || landParcel.parcelId
+          landParcel.sheetId = landParcel.sheetId || landParcel.osSheetId
           const response = await fetch(
             `http://localhost:${config.get('port')}/land/moorland/intersects?landParcelId=${landParcel.id}&sheetId=${landParcel.sheetId}`
           )
           const json = await response.json()
-          return ['moorland', json.percentage] // TODO - This needs to be replaced with where we're getting the moorland intersection from ArgGIS
+          return ['moorland', json.entity.availableArea] // TODO - This needs to be replaced with where we're getting the moorland intersection from ArgGIS
         }
       })
     )
