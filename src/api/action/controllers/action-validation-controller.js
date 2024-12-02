@@ -71,7 +71,8 @@ const executeActionRules = async (db, userSelectedActions, landParcel) => {
       landParcel: {
         area: parseFloat(landParcel.area),
         moorlandLineStatus: landParcel.moorlandLineStatus,
-        existingAgreements: []
+        existingAgreements: [],
+        intersections: {}
       }
     }
     const userSelectedAction = actionPromises[index]

@@ -10,7 +10,7 @@ describe('is-below-moorland-line', function () {
     }
 
     // Act
-    const result = rules['is-below-moorland-line'](application)
+    const result = rules['is-below-moorland-line'].check(application)
 
     // Assert
     expect(result).toStrictEqual({ passed: true })
@@ -25,7 +25,7 @@ describe('is-below-moorland-line', function () {
     }
 
     // Act
-    const result = rules['is-below-moorland-line'](application)
+    const result = rules['is-below-moorland-line'].check(application)
 
     // Assert
     expect(result).toStrictEqual({

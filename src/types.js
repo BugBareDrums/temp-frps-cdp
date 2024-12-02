@@ -31,6 +31,31 @@ export const blankIntersections = {
  */
 
 /**
- * @typedef RuleResponse
+ * @typedef {object} RuleCheckResult
  * @property {boolean} passed
+ * @property {string} message
+ */
+
+/**
+ * @typedef {object} RuleCheckResults
+ * @property {boolean} passed
+ * @property {string} message
+ * @property {RuleCheckResult[]} allResults
+ */
+
+/**
+ * @typedef {Record<string, unknown>} RuleConfig
+ */
+
+/**
+ * @typedef {Function} RuleCheck
+ * @param {Application} application
+ * @param {RuleConfig} ruleConfig
+ * @returns {RuleCheckResult}
+ */
+
+/**
+ * @typedef {object} Rule
+ * @property {RuleCheck} check
+ * @property {LayerId[]} requiredDataLayers
  */

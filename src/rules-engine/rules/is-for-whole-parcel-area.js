@@ -1,4 +1,4 @@
-export function isForWholeParcelArea(application) {
+export function check(application) {
   const {
     areaAppliedFor,
     landParcel: { area }
@@ -15,3 +15,8 @@ export function isForWholeParcelArea(application) {
 
   return { passed: true }
 }
+
+/**
+ * @type {import('../../types.js').Rule}
+ */
+export const isForWholeParcelArea = { check, requiredDataLayers: [] }
