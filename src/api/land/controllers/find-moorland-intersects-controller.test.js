@@ -166,19 +166,19 @@ describe('Find Moorland Intersects', () => {
       landParcelId,
       sheetId
     )
-    // expect(arcgisService.fetchMoorlandIntersection).toHaveBeenCalledWith(
-    //   server,
-    //   {
-    //     rings: [
-    //       [
-    //         [-3.84215781948155, 50.2369627492092],
-    //         [-3.84188557735844, 50.236368577696],
-    //         [-3.84159762148358, 50.2357813103825],
-    //         [-3.84215781948155, 50.2369627492092]
-    //       ]
-    //     ]
-    //   }
-    // )
+    expect(arcgisService.fetchMoorlandIntersection).toHaveBeenCalledWith(
+      server,
+      {
+        rings: [
+          [
+            [-3.84215781948155, 50.2369627492092],
+            [-3.84188557735844, 50.236368577696],
+            [-3.84159762148358, 50.2357813103825],
+            [-3.84215781948155, 50.2369627492092]
+          ]
+        ]
+      }
+    )
     expect(fetch).toHaveBeenCalledTimes(2) // One call for intersection, one for areas
   })
 
@@ -241,16 +241,16 @@ describe('Find Moorland Intersects', () => {
     expect(statusCode).toBe(200)
     expect(message).toBe('success')
     expect(entity).toEqual(expected)
-    // expect(fetchMoorlandIntersectionSpy).toHaveBeenCalledWith(server, {
-    //   rings: [
-    //     [
-    //       [-3.84215781948155, 50.2369627492092],
-    //       [-3.84188557735844, 50.236368577696],
-    //       [-3.84159762148358, 50.2357813103825],
-    //       [-3.84215781948155, 50.2369627492092]
-    //     ]
-    //   ]
-    // })
+    expect(fetchMoorlandIntersectionSpy).toHaveBeenCalledWith(server, {
+      rings: [
+        [
+          [-3.84215781948155, 50.2369627492092],
+          [-3.84188557735844, 50.236368577696],
+          [-3.84159762148358, 50.2357813103825],
+          [-3.84215781948155, 50.2369627492092]
+        ]
+      ]
+    })
     expect(fetch).not.toHaveBeenCalled()
   })
 })
