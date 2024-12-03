@@ -9,7 +9,7 @@ export function isForWholeParcelArea(application) {
     landParcel: { area }
   } = application
 
-  const passed = areaAppliedFor.toString() === area.toString()
+  const passed = areaAppliedFor === area
 
   if (!passed) {
     return {
