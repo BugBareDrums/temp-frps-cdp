@@ -1,6 +1,7 @@
 import Hapi from '@hapi/hapi'
 import { action } from '../index.js'
 import { actions as mockActions } from '~/src/helpers/seed-db/data/actions.js'
+import { isValidCombination } from './action-validation-controller.js'
 
 const originalFetch = global.fetch
 
@@ -122,7 +123,7 @@ describe('Action Validation controller', () => {
       expect(statusCode).toBe(200)
       expect(result).toEqual(
         JSON.stringify({
-          message: 'Action combination valid',
+          message: ['Action combination valid'],
           isValidCombination: true
         })
       )
@@ -155,8 +156,9 @@ describe('Action Validation controller', () => {
       expect(statusCode).toBe(200)
       expect(result).toBe(
         JSON.stringify({
-          message:
-            'CSAM1: Area applied for (6.2721ha) does not match parcel area (5.2721ha)',
+          message: [
+            'Area applied for (6.2721ha) is greater than parcel area (5.2721ha)'
+          ],
           isValidCombination: false
         })
       )
@@ -189,10 +191,28 @@ describe('Action Validation controller', () => {
       expect(statusCode).toBe(200)
       expect(result).toBe(
         JSON.stringify({
-          message: 'Action combination valid',
+          message: ['Action combination valid'],
           isValidCombination: true
         })
       )
+    })
+  })
+
+  describe('is valid combination function', () => {
+    it('should return undefined if supplied actions are compatible', () => {
+      const result = isValidCombination([], [{ actionCode: 'CSAM1' }], ['PG01'])
+      expect(result).toStrictEqual([])
+    })
+
+    it('should return an error if supplied actions are incompatible', () => {
+      const result = isValidCombination(
+        [],
+        [{ actionCode: 'CSAM3' }, { actionCode: 'CLIG3' }],
+        ['PG01']
+      )
+      expect(result).toStrictEqual([
+        `The selected combination of actions are invalid for land use code: PG01`
+      ])
     })
   })
 })

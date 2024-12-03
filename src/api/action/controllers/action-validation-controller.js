@@ -15,9 +15,18 @@ const isValidArea = (userSelectedActions, landParcel) => {
       ]
     }
   }
+
+  return []
 }
 
-const isValidCombination = (
+/**
+ * Checks if the supplied actions are a valid combination
+ * @param {Array} preexistingActions
+ * @param {Array<object>} userSelectedActions
+ * @param {Array<string>} landUseCodes
+ * @returns {Array}
+ */
+export const isValidCombination = (
   preexistingActions = [],
   userSelectedActions,
   landUseCodes
@@ -25,16 +34,22 @@ const isValidCombination = (
   const actionCodes = userSelectedActions
     .concat(preexistingActions)
     .map((action) => action.actionCode)
+
   for (const code of landUseCodes) {
     const allowedCombinations =
       actionCombinationLandUseCompatibilityMatrix[code] || []
     let validForThisCode = false
+
     for (const combination of allowedCombinations) {
-      if (actionCodes.every((actionCode) => combination.includes(actionCode))) {
+      if (
+        actionCodes.length === combination.length &&
+        actionCodes.every((actionCode) => combination.includes(actionCode))
+      ) {
         validForThisCode = true
         break
       }
     }
+
     if (!validForThisCode) {
       if (preexistingActions.length > 0) {
         const actionCodesString = preexistingActions
@@ -49,6 +64,8 @@ const isValidCombination = (
       ]
     }
   }
+
+  return []
 }
 
 /**
@@ -69,7 +86,7 @@ const findIntersections = async (landParcel, action) => ({
             `http://localhost:${config.get('port')}/land/moorland/intersects?landParcelId=${landParcel.id}&sheetId=${landParcel.sheetId}`
           )
           const json = await response.json()
-          return ['moorland', json.entity.availableArea] // TODO - This needs to be replaced with where we're getting the moorland intersection from ArgGIS
+          return ['moorland', json.entity.availableArea]
         }
       })
     )
@@ -145,14 +162,14 @@ const actionValidationController = {
    * @returns { Promise<*> }
    */
   handler: async ({ db, payload: { actions, landParcel } }, h) => {
-    const errors = {
+    const errors = [
       ...isValidArea(actions, landParcel),
       ...isValidCombination(
         landParcel.agreements,
         actions,
         landParcel.landUseCodes
       )
-    }
+    ]
 
     if (errors.length) {
       return h
@@ -192,7 +209,7 @@ const actionValidationController = {
     return h
       .response(
         JSON.stringify({
-          message: 'Action combination valid',
+          message: ['Action combination valid'],
           isValidCombination: true
         })
       )
