@@ -7,7 +7,13 @@
  */
 
 /**
- * @type {Intersections}
+ * @typedef { object } Intersection
+ * @property { string } type
+ * @property { number } percentage
+ */
+
+/**
+ * @type { Intersections }
  */
 export const blankIntersections = {
   sssi: 0,
@@ -24,6 +30,12 @@ export const blankIntersections = {
  */
 
 /**
+ * @typedef { object } LandParcelGeometry
+ * @property { string } type
+ * @property { Array<Array<number[]>> } coordinates
+ */
+
+/**
  * @typedef Application
  * @property {number} areaAppliedFor
  * @property {string} actionCodeAppliedFor
@@ -33,4 +45,5 @@ export const blankIntersections = {
 /**
  * @typedef RuleResponse
  * @property {boolean} passed
+ * @property {string} [message]
  */

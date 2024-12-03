@@ -1,5 +1,10 @@
 import { rules } from './rules/index.js'
 
+/**
+ * @typedef RuleResponse
+ * @property { boolean } passed
+ */
+
 export const executeRule = (ruleName, application, ruleConfig) => {
   const rule = rules[ruleName]
 

@@ -16,7 +16,7 @@ const findLandParcelIntersectsController = {
   handler: async (request, h) => {
     const entity = await findLandParcelIntersects(
       request.server,
-      request.params.landParcelId,
+      request.query.landParcelId,
       request.query.sheetId
     )
     if (isNull(entity)) {

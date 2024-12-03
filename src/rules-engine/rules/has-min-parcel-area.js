@@ -3,7 +3,7 @@ export const hasMinimumParcelArea = (application, ruleConfig) => {
     landParcel: { area }
   } = application
 
-  const passed = area >= ruleConfig.minArea
+  const passed = parseFloat(area) >= parseFloat(ruleConfig.minArea)
 
   return !passed
     ? {

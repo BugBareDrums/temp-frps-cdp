@@ -5,7 +5,7 @@ export function totalAreaWithException(application, config) {
     landParcel: { existingAgreements, area }
   } = application
 
-  const incompatibleAction = existingAgreements.find(
+  const incompatibleAction = existingAgreements?.find(
     (/** @type {{ code: string; }} */ agreement) =>
       config.incompatibleAction === agreement.code
   )
